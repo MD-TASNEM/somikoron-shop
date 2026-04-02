@@ -1,0 +1,7 @@
+{
+  "name": "Somikoron Shop | সমীকরণ শপ",
+  "description": "Your one-stop destination for all types of customized products. Cups, plates, photo frames, Nikah Nama, pens, scales and more!",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", sans-serif;
+  --font-bengali: "Hind Siliguri", sans-serif;
+
+  --color-primary: #e74c3c;
+  --color-primary-container: #c0392b;
+  --color-on-primary: #ffffff;
+  
+  --color-secondary: #2c3e50;
+  --color-secondary-container: #34495e;
+  --color-on-secondary-container: #ffffff;
+
+  --color-tertiary: #f39c12;
+  
+  --color-surface: #f8f9fa;
+  --color-surface-container-low: #f3f4f5;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-surface: #191c1d;
+  
+  --color-success: #25d366;
+  
+  --radius-subtle: 0.5rem;
+  --radius-premium: 1.5rem;
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-on-surface font-sans antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold tracking-tight;
+  }
+
+  .bengali {
+    @apply font-bengali tracking-tight;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-surface/85 backdrop-blur-xl;
+  }
+  
+  .somikoron-gradient {
+    @apply bg-linear-to-br from-primary to-primary-container;
+  }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

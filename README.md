@@ -1,126 +1,26 @@
-# Next.js 14 Project with App Router
+# E-Commerce-Project
 
-A modern Next.js 14 project configured with TypeScript, Tailwind CSS, ESLint, and essential integrations for MongoDB, NextAuth, and SSLCommerz payment gateway.
+A full-stack e-commerce application built with React, Express, and MongoDB.
 
-## 🚀 Features
+## Features
 
-- **Next.js 14** with App Router
-- **TypeScript** for type safety
-- **Tailwind CSS** for styling
-- **ESLint** for code quality
-- **MongoDB** integration ready
-- **NextAuth.js** authentication setup
-- **SSLCommerz** payment gateway configuration
-- **Image optimization** with multiple domain support
+- Product browsing and categories
+- Shopping cart functionality
+- User authentication (JWT)
+- Admin dashboard for product and order management
+- Responsive design with Tailwind CSS
+- Real-time database connection monitoring
 
-## 📋 Prerequisites
+## Tech Stack
 
-- Node.js 18+
-- MongoDB (local or cloud)
-- SSLCommerz account (for payments)
+- **Frontend**: React, Vite, Tailwind CSS, Lucide React, Framer Motion
+- **Backend**: Node.js, Express
+- **Database**: MongoDB (Atlas)
+- **Authentication**: JWT, bcryptjs
 
-## 🛠️ Installation
+## Setup
 
-1. Clone the repository:
-
-```bash
-git clone <repository-url>
-cd nextjs-project
-```
-
-2. Install dependencies:
-
-```bash
-npm install
-```
-
-3. Set up environment variables:
-
-```bash
-cp .env.example .env.local
-```
-
-4. Configure your environment variables in `.env.local`:
-
-```env
-# MongoDB Configuration
-MONGODB_URI=mongodb://localhost:27017/your-database-name
-
-# NextAuth Configuration
-NEXTAUTH_SECRET=your-super-secret-key-here-change-this-in-production
-NEXTAUTH_URL=http://localhost:3000
-
-# SSLCommerz Configuration
-SSLCOMMERS_STORE_ID=your-store-id-here
-SSLCOMMERS_STORE_PASSWORD=your-store-password-here
-SSLCOMMERS_TEST_MODE=true
-```
-
-## 🏃‍♂️ Getting Started
-
-Run the development server:
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## 📁 Project Structure
-
-```
-nextjs-project/
-├── src/
-│   ├── app/              # App Router pages
-│   ├── components/       # Reusable components
-│   ├── lib/             # Utility functions
-│   └── types/           # TypeScript type definitions
-├── public/              # Static assets
-├── .env.local          # Environment variables (don't commit)
-├── .env.example        # Environment variables template
-├── next.config.ts      # Next.js configuration
-├── tailwind.config.ts  # Tailwind CSS configuration
-└── tsconfig.json       # TypeScript configuration
-```
-
-## 🔧 Configuration
-
-### Image Domains
-
-The project is configured to allow images from:
-
-- Local development (localhost, 127.0.0.1)
-- Cloudinary
-- Unsplash
-- Google Cloud Storage
-- Amazon S3
-- Custom CDN domains
-
-Add more domains in `next.config.ts` if needed.
-
-### Environment Variables
-
-All environment variables are typed in `src/types/env.d.ts` for better TypeScript support.
-
-## 📦 Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-
-## 🚀 Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-## 📚 Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [NextAuth.js Documentation](https://next-auth.js.org)
-- [MongoDB Documentation](https://docs.mongodb.com)
+1. Configure your `MONGODB_URI` and `JWT_SECRET` in the environment variables.
+2. Ensure your IP is whitelisted in MongoDB Atlas (add `0.0.0.0/0` for testing).
+3. Run `npm install` to install dependencies.
+4. Run `npm run dev` to start the development server.
