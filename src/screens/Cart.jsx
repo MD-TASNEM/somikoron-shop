@@ -49,7 +49,7 @@ export const Cart = () => {
                         </div>
                       )}
                     </div>
-                    <button
+                    <button 
                       onClick={() => removeItem(item.cartItemId)}
                       className="p-2 text-secondary/20 hover:text-error transition-colors"
                     >
@@ -65,14 +65,14 @@ export const Cart = () => {
 
                 <div className="flex items-center gap-6 mt-4">
                   <div className="flex items-center gap-4 bg-secondary/5 rounded-full px-3 py-1">
-                    <button
+                    <button 
                       onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
                       className="p-1 hover:text-primary transition-colors"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
                     <span className="text-sm font-bold w-6 text-center">{item.quantity}</span>
-                    <button
+                    <button 
                       onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
                       disabled={item.quantity >= (item.selectedVariant ? item.selectedVariant.stock : item.stock)}
                       className="p-1 hover:text-primary transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
@@ -81,7 +81,7 @@ export const Cart = () => {
                     </button>
                   </div>
                   <p className="text-[10px] font-bold text-secondary/40 uppercase tracking-widest">
-                    {item.selectedVariant
+                    {item.selectedVariant 
                       ? `${item.selectedVariant.stock} available`
                       : `${item.stock} available`
                     }
@@ -114,7 +114,7 @@ export const Cart = () => {
                 <span className="text-primary">৳{getTotalPrice()}</span>
               </div>
             </div>
-            <Link
+            <Link 
               to="/checkout"
               className="w-full bg-primary text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary-dark transition-all shadow-lg shadow-primary/20 group"
             >

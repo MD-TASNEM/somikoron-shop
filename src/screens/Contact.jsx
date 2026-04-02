@@ -1,240 +1,100 @@
-import React, { useState } from "react";
-import {
-  Phone,
-  Mail,
-  MapPin,
-  MessageCircle as WhatsAppIcon,
-  Send,
-  Mail as MailIcon,
-  Navigation,
-} from "lucide-react";
+import React from 'react';
+import { Phone, Mail, MapPin, MessageCircle, Send, Clock } from 'lucide-react';
 
 export const Contact = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission
-    console.log("Form submitted:", formData);
-    setFormData({ name: "", email: "", message: "" });
-  };
-
   return (
-    <div className="bg-background text-on-surface font-body min-h-screen pb-32">
-      <main className="pt-24 px-6 max-w-7xl mx-auto">
-        {/* Hero Section */}
-        <section className="mb-12">
-          <h2 className="font-headline font-extrabold text-4xl text-on-surface tracking-tight leading-tight mb-4">
-            Connect with our <span className="text-primary">Atelier</span>
-          </h2>
-          <p className="text-secondary font-body leading-relaxed max-w-xs">
-            Crafting meaningful connections. Our team is here to assist with
-            your bespoke inquiries and orders.
-          </p>
-        </section>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="text-center max-w-3xl mx-auto mb-20 space-y-4">
+        <h1 className="text-5xl font-extrabold text-secondary">Contact Us</h1>
+        <p className="text-lg text-secondary/60">Have questions about our products or your order? We're here to help you 24/7.</p>
+      </div>
 
-        {/* Contact Cards - Heritage Editorial Style */}
-        <div className="grid grid-cols-1 gap-6 mb-12">
-          {/* WhatsApp Card */}
-          <div className="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_30px_rgba(44,62,80,0.04)] flex items-start gap-6 relative overflow-hidden group hover:shadow-md transition-all">
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <MessageCircle className="text-9xl" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        {/* Info Cards */}
+        <div className="space-y-6">
+          <div className="bg-white p-8 rounded-premium shadow-sm border border-secondary/5 flex items-start gap-6 group hover:shadow-md transition-all">
+            <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+              <Phone className="w-6 h-6" />
             </div>
-            <div className="bg-success/10 p-4 rounded-full">
-              <WhatsAppIcon className="text-success text-3xl" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-headline font-bold text-xl mb-1">WhatsApp</h3>
-              <p className="text-secondary text-sm mb-4">
-                Immediate support for active orders and quick questions.
-              </p>
-              <a
-                href="https://wa.me/8801996570203"
-                className="text-primary font-semibold tracking-wide hover:underline"
-              >
-                +880 1996-570203
-              </a>
+            <div>
+              <h3 className="text-lg font-bold text-secondary">Call Us</h3>
+              <p className="text-secondary/60 text-sm mt-1">Available 10 AM - 10 PM</p>
+              <a href="tel:01996570203" className="text-primary font-bold mt-2 block hover:underline">01996-570203</a>
             </div>
           </div>
 
-          {/* Hotline Card */}
-          <div className="bg-surface-container-low p-8 rounded-xl flex items-start gap-6 hover:shadow-md transition-all">
-            <div className="bg-primary/10 p-4 rounded-full">
-              <Phone className="text-primary text-3xl" />
+          <div className="bg-white p-8 rounded-premium shadow-sm border border-secondary/5 flex items-start gap-6 group hover:shadow-md transition-all">
+            <div className="w-14 h-14 bg-success/10 rounded-2xl flex items-center justify-center text-success group-hover:scale-110 transition-transform">
+              <MessageCircle className="w-6 h-6" />
             </div>
-            <div className="flex-1">
-              <h3 className="font-headline font-bold text-xl mb-1">Hotline</h3>
-              <p className="text-secondary text-sm mb-4">
-                Available Sat-Thu, 10 AM to 8 PM for voice assistance.
-              </p>
-              <a
-                href="tel:01996570203"
-                className="text-on-surface font-semibold tracking-wide hover:underline"
-              >
-                01996-570203
-              </a>
+            <div>
+              <h3 className="text-lg font-bold text-secondary">WhatsApp</h3>
+              <p className="text-secondary/60 text-sm mt-1">Chat with our support team</p>
+              <a href="https://wa.me/8801996570203" className="text-success font-bold mt-2 block hover:underline">+880 1996-570203</a>
             </div>
           </div>
 
-          {/* Editorial Card */}
-          <div className="bg-surface-container-lowest p-8 rounded-xl shadow-[0_12px_30px_rgba(44,62,80,0.04)] border border-outline-variant/10 flex items-start gap-6 hover:shadow-md transition-all">
-            <div className="bg-tertiary/10 p-4 rounded-full">
-              <MailIcon className="text-tertiary text-3xl" />
+          <div className="bg-white p-8 rounded-premium shadow-sm border border-secondary/5 flex items-start gap-6 group hover:shadow-md transition-all">
+            <div className="w-14 h-14 bg-secondary/5 rounded-2xl flex items-center justify-center text-secondary group-hover:scale-110 transition-transform">
+              <MapPin className="w-6 h-6" />
             </div>
-            <div className="flex-1">
-              <h3 className="font-headline font-bold text-xl mb-1">
-                Editorial Inquiry
-              </h3>
-              <p className="text-secondary text-sm mb-4">
-                For collaborations, wholesale, and creative partnerships.
+            <div>
+              <h3 className="text-lg font-bold text-secondary">Location</h3>
+              <p className="text-secondary/60 text-sm mt-1 leading-relaxed">
+                Islamic university, Bangladesh Main gate, Jhenaidah, kushtia
               </p>
-              <a
-                href="mailto:atelier@somikoron.com"
-                className="text-primary font-semibold tracking-wide hover:underline"
-              >
-                atelier@somikoron.com
-              </a>
             </div>
           </div>
         </div>
 
         {/* Contact Form */}
-        <section className="mb-12">
-          <h3 className="font-headline font-bold text-2xl mb-8">
-            Send Message
-          </h3>
-          <form onSubmit={handleSubmit} className="space-y-8">
-            <div className="relative">
-              <input
-                type="text"
-                id="name"
-                placeholder=" "
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                className="block w-full px-0 py-3 text-on-surface bg-transparent border-0 border-b-2 border-surface-container-high focus:ring-0 focus:border-primary peer transition-all duration-300 outline-none"
+        <div className="lg:col-span-2 bg-white p-10 rounded-premium shadow-xl border border-secondary/5">
+          <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
+            <Send className="w-6 h-6 text-primary" /> Send us a Message
+          </h2>
+          <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-secondary/60">Full Name</label>
+              <input 
+                type="text" 
+                className="w-full px-6 py-4 bg-secondary/5 border-none rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                placeholder="John Doe"
               />
-              <label
-                htmlFor="name"
-                className="absolute text-sm text-secondary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 peer-focus:text-primary"
-              >
-                Full Name
-              </label>
             </div>
-
-            <div className="relative">
-              <input
-                type="email"
-                id="email"
-                placeholder=" "
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                className="block w-full px-0 py-3 text-on-surface bg-transparent border-0 border-b-2 border-surface-container-high focus:ring-0 focus:border-primary peer transition-all duration-300 outline-none"
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-secondary/60">Email Address</label>
+              <input 
+                type="email" 
+                className="w-full px-6 py-4 bg-secondary/5 border-none rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                placeholder="john@example.com"
               />
-              <label
-                htmlFor="email"
-                className="absolute text-sm text-secondary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 peer-focus:text-primary"
-              >
-                Email Address
-              </label>
             </div>
-
-            <div className="relative">
-              <textarea
-                id="message"
-                placeholder=" "
-                rows="3"
-                value={formData.message}
-                onChange={(e) =>
-                  setFormData({ ...formData, message: e.target.value })
-                }
-                className="block w-full px-0 py-3 text-on-surface bg-transparent border-0 border-b-2 border-surface-container-high focus:ring-0 focus:border-primary peer transition-all duration-300 resize-none outline-none"
+            <div className="md:col-span-2 space-y-2">
+              <label className="text-sm font-bold text-secondary/60">Subject</label>
+              <input 
+                type="text" 
+                className="w-full px-6 py-4 bg-secondary/5 border-none rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                placeholder="How can we help?"
               />
-              <label
-                htmlFor="message"
-                className="absolute text-sm text-secondary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 peer-focus:text-primary"
-              >
-                Your Message
-              </label>
             </div>
-
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-[#b1241a] to-[#d43e30] text-white font-headline font-bold py-4 rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition-transform"
-            >
-              Submit Inquiry
-            </button>
+            <div className="md:col-span-2 space-y-2">
+              <label className="text-sm font-bold text-secondary/60">Message</label>
+              <textarea 
+                className="w-full px-6 py-4 bg-secondary/5 border-none rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all h-40"
+                placeholder="Write your message here..."
+              />
+            </div>
+            <div className="md:col-span-2">
+              <button 
+                type="submit"
+                className="w-full bg-primary text-white py-4 rounded-xl font-bold hover:bg-primary-dark transition-all shadow-lg shadow-primary/20"
+              >
+                Send Message
+              </button>
+            </div>
           </form>
-        </section>
-
-        {/* Atelier Location */}
-        <section>
-          <div className="flex justify-between items-end mb-6">
-            <div>
-              <h3 className="font-headline font-bold text-2xl mb-1">
-                Atelier Location
-              </h3>
-              <p className="text-secondary text-sm">
-                Visit our flagship studio
-              </p>
-            </div>
-            <a
-              href="#"
-              className="text-primary font-semibold text-sm flex items-center gap-1 hover:underline"
-            >
-              Get Directions <Navigation className="w-4 h-4" />
-            </a>
-          </div>
-
-          <div className="relative h-64 w-full rounded-2xl overflow-hidden shadow-sm">
-            <img
-              className="w-full h-full object-cover grayscale opacity-80"
-              alt="Atelier Location Map"
-              src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1200&q=80"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-              <div className="relative">
-                <div className="absolute inset-0 bg-primary/20 animate-pulse rounded-full"></div>
-                <div className="relative bg-primary p-2 rounded-full border-4 border-white shadow-xl">
-                  <MapPin className="text-white text-xl" />
-                </div>
-              </div>
-            </div>
-            <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md px-4 py-3 rounded-lg border border-black/5">
-              <p className="text-[10px] uppercase tracking-widest font-bold text-primary mb-0.5">
-                Headquarters
-              </p>
-              <p className="text-xs font-semibold text-on-surface">
-                Banani, Road 11, Dhaka
-              </p>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      {/* Floating WhatsApp Button */}
-      <a
-        href="https://wa.me/8801996570203"
-        className="fixed bottom-24 right-6 z-50 w-16 h-16 bg-success rounded-full flex items-center justify-center shadow-[0_12px_30px_rgba(37,211,102,0.3)] active:scale-90 duration-200 hover:shadow-[0_16px_40px_rgba(37,211,102,0.4)] transition-all"
-      >
-        <WhatsAppIcon className="text-white text-3xl" />
-      </a>
+        </div>
+      </div>
     </div>
   );
 };
-
-function MessageCircle(props) {
-  return (
-    <svg {...props} fill="currentColor" viewBox="0 0 24 24">
-      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-    </svg>
-  );
-}

@@ -1,50 +1,24 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import {
-  ShoppingBag,
-  Search,
-  Menu,
-  User,
-  X,
-  Phone,
-  MessageCircle as WhatsAppIcon,
-  ChevronRight,
-  LogOut,
-  Shield,
-} from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
-import { WhatsAppFloat } from "./WhatsAppFloat";
-import { CartSidebar } from "./CartSidebar";
-import { useCartStore } from "../store/cartStore";
-import { useAuthStore } from "../store/authStore";
-import { CATEGORIES } from "../types";
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { ShoppingBag, Search, Menu, User, X, Phone, MessageCircle as WhatsAppIcon, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { WhatsAppFloat } from './WhatsAppFloat';
+import { CartSidebar } from './CartSidebar';
+import { useCartStore } from '../store/cartStore';
+import { CATEGORIES } from '../types';
 
 export const Layout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isCartOpen, setIsCartOpen] = React.useState(false);
   const [isSearchOpen, setIsSearchOpen] = React.useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
   const location = useLocation();
-  const totalItems = useCartStore((state) => state.getTotalItems());
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const totalItems = useCartStore(state => state.getTotalItems());
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
     setIsMenuOpen(false);
     setIsSearchOpen(false);
-    setIsUserMenuOpen(false);
   }, [location]);
-
-  // Close user menu when clicking outside
-  React.useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!event.target.closest(".user-menu-container")) {
-        setIsUserMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
@@ -52,22 +26,13 @@ export const Layout = ({ children }) => {
       <div className="bg-secondary text-white py-2 text-[10px] sm:text-xs font-medium">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2 text-center sm:text-left">
           <div className="flex items-center gap-2">
-            <span className="bengali tracking-normal">
-              সমীকরণ শপে আপনাকে স্বাগতম। আমাদের যে কোন পণ্য অর্ডার করতে WhatsApp
-              করুন:
-            </span>
+            <span className="bengali tracking-normal">সমীকরণ শপে আপনাকে স্বাগতম। আমাদের যে কোন পণ্য অর্ডার করতে WhatsApp করুন:</span>
           </div>
           <div className="flex items-center gap-4 sm:gap-6">
-            <a
-              href="tel:01996570203"
-              className="flex items-center gap-2 hover:text-primary transition-colors"
-            >
+            <a href="tel:01996570203" className="flex items-center gap-2 hover:text-primary transition-colors">
               <Phone className="w-3 h-3" /> 01996-570203
             </a>
-            <a
-              href="https://wa.me/8801996570203"
-              className="flex items-center gap-2 hover:text-primary transition-colors"
-            >
+            <a href="https://wa.me/8801996570203" className="flex items-center gap-2 hover:text-primary transition-colors">
               <WhatsAppIcon className="w-3 h-3" /> +880 1996-570203
             </a>
           </div>
@@ -79,7 +44,7 @@ export const Layout = ({ children }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             {/* Mobile Menu Toggle */}
-            <button
+            <button 
               onClick={() => setIsMenuOpen(true)}
               className="lg:hidden p-2 text-secondary hover:text-primary transition-colors"
             >
@@ -95,22 +60,21 @@ export const Layout = ({ children }) => {
                 <span className="text-xl font-extrabold tracking-tight text-secondary leading-none">
                   <span className="text-primary">সমীকরণ</span> শপ
                 </span>
-                <span className="text-[8px] tracking-[0.3em] text-secondary/60 font-bold uppercase">
-                  Somikoron Shop
-                </span>
+                <span className="text-[8px] tracking-[0.3em] text-secondary/60 font-bold uppercase">Somikoron Shop</span>
               </div>
             </Link>
 
             {/* Desktop Nav */}
             <nav className="hidden lg:flex items-center gap-8">
               {[
-                { name: "Home", path: "/" },
-                { name: "Products", path: "/category/all" },
-                { name: "Offers", path: "/offers" },
-                { name: "Contact", path: "/contact" },
+                { name: 'Home', path: '/' },
+                { name: 'Products', path: '/category/all' },
+                { name: 'Offers', path: '/#offers' },
+                { name: 'Features', path: '/#features' },
+                { name: 'Contact', path: '/#contact' }
               ].map((item) => (
-                <Link
-                  key={item.name}
+                <Link 
+                  key={item.name} 
                   to={item.path}
                   className="text-sm font-bold text-secondary hover:text-primary transition-colors tracking-wide relative group"
                 >
@@ -122,109 +86,16 @@ export const Layout = ({ children }) => {
 
             {/* Actions */}
             <div className="flex items-center gap-2 sm:gap-4">
-              <button
+              <button 
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                 className="p-2 text-secondary hover:text-primary transition-colors"
               >
                 <Search className="w-5 h-5" />
               </button>
-
-              {/* User Menu */}
-              <div className="relative user-menu-container">
-                <button
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="p-2 text-secondary hover:text-primary transition-colors flex items-center gap-2"
-                >
-                  <User className="w-5 h-5" />
-                  {isAuthenticated && (
-                    <span className="hidden sm:block text-sm font-medium">
-                      {user?.name?.split(" ")[0]}
-                    </span>
-                  )}
-                </button>
-
-                {/* User Dropdown */}
-                <AnimatePresence>
-                  {isUserMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                      className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-xl border border-secondary/10 py-2 z-50"
-                    >
-                      {isAuthenticated ? (
-                        <>
-                          <div className="px-4 py-3 border-b border-secondary/5">
-                            <p className="text-sm font-bold text-secondary">
-                              {user?.name}
-                            </p>
-                            <p className="text-xs text-secondary/60">
-                              {user?.email}
-                            </p>
-                          </div>
-                          <Link
-                            to="/profile"
-                            className="block px-4 py-3 text-sm text-secondary hover:bg-primary/5 hover:text-primary transition-colors"
-                            onClick={() => setIsUserMenuOpen(false)}
-                          >
-                            <User className="w-4 h-4 inline mr-2" />
-                            Profile
-                          </Link>
-                          <Link
-                            to="/orders"
-                            className="block px-4 py-3 text-sm text-secondary hover:bg-primary/5 hover:text-primary transition-colors"
-                            onClick={() => setIsUserMenuOpen(false)}
-                          >
-                            <ShoppingBag className="w-4 h-4 inline mr-2" />
-                            My Orders
-                          </Link>
-                          {user?.role === "admin" && (
-                            <Link
-                              to="/admin"
-                              className="block px-4 py-3 text-sm text-secondary hover:bg-primary/5 hover:text-primary transition-colors"
-                              onClick={() => setIsUserMenuOpen(false)}
-                            >
-                              <Shield className="w-4 h-4 inline mr-2" />
-                              Admin Panel
-                            </Link>
-                          )}
-                          <button
-                            onClick={() => {
-                              logout();
-                              setIsUserMenuOpen(false);
-                            }}
-                            className="w-full text-left px-4 py-3 text-sm text-secondary hover:bg-red-50 hover:text-red-600 transition-colors"
-                          >
-                            <LogOut className="w-4 h-4 inline mr-2" />
-                            Logout
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <Link
-                            to="/login"
-                            className="block px-4 py-3 text-sm text-secondary hover:bg-primary/5 hover:text-primary transition-colors"
-                            onClick={() => setIsUserMenuOpen(false)}
-                          >
-                            <User className="w-4 h-4 inline mr-2" />
-                            Login
-                          </Link>
-                          <Link
-                            to="/register"
-                            className="block px-4 py-3 text-sm text-secondary hover:bg-primary/5 hover:text-primary transition-colors"
-                            onClick={() => setIsUserMenuOpen(false)}
-                          >
-                            <User className="w-4 h-4 inline mr-2" />
-                            Register
-                          </Link>
-                        </>
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              <button
+              <button className="hidden sm:block p-2 text-secondary hover:text-primary transition-colors">
+                <User className="w-5 h-5" />
+              </button>
+              <button 
                 onClick={() => setIsCartOpen(true)}
                 className="p-2 text-secondary hover:text-primary transition-colors relative group"
               >
@@ -246,16 +117,16 @@ export const Layout = ({ children }) => {
           {isSearchOpen && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
+              animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               className="bg-white border-t border-secondary/5 overflow-hidden"
             >
               <div className="max-w-3xl mx-auto px-4 py-6">
                 <div className="relative">
-                  <input
+                  <input 
                     autoFocus
-                    type="text"
-                    placeholder="Search for products (e.g. Panjabi, Mugs...)"
+                    type="text" 
+                    placeholder="Search for products (e.g. Panjabi, Mugs...)" 
                     className="w-full bg-secondary/5 border-none rounded-full px-6 py-4 text-secondary outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                   />
                   <Search className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary/40" />
@@ -280,10 +151,10 @@ export const Layout = ({ children }) => {
               className="fixed inset-0 bg-secondary/40 backdrop-blur-sm z-50 lg:hidden"
             />
             <motion.div
-              initial={{ x: "-100%" }}
+              initial={{ x: '-100%' }}
               animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               className="fixed inset-y-0 left-0 w-80 bg-white z-50 lg:hidden shadow-2xl flex flex-col"
             >
               <div className="p-6 border-b border-secondary/5 flex justify-between items-center">
@@ -293,23 +164,18 @@ export const Layout = ({ children }) => {
                   </div>
                   <span className="text-lg font-bold">সমীকরণ শপ</span>
                 </Link>
-                <button
-                  onClick={() => setIsMenuOpen(false)}
-                  className="p-2 hover:bg-secondary/5 rounded-full transition-colors"
-                >
+                <button onClick={() => setIsMenuOpen(false)} className="p-2 hover:bg-secondary/5 rounded-full transition-colors">
                   <X className="w-6 h-6 text-secondary" />
                 </button>
               </div>
-
+              
               <div className="flex-grow overflow-y-auto p-6 space-y-8 no-scrollbar">
                 <div className="space-y-4">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-secondary/40">
-                    Categories
-                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-secondary/40">Categories</p>
                   <nav className="flex flex-col gap-2">
                     {CATEGORIES.map((cat) => (
-                      <Link
-                        key={cat.id}
+                      <Link 
+                        key={cat.id} 
                         to={`/category/${cat.id}`}
                         className="flex items-center justify-between p-3 rounded-xl hover:bg-primary/5 hover:text-primary transition-all group"
                       >
@@ -321,94 +187,16 @@ export const Layout = ({ children }) => {
                 </div>
 
                 <div className="space-y-4">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-secondary/40">
-                    Quick Links
-                  </p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-secondary/40">Quick Links</p>
                   <nav className="flex flex-col gap-4 pl-3">
-                    <Link
-                      to="/"
-                      className="text-sm font-medium hover:text-primary transition-colors"
-                    >
-                      Home
-                    </Link>
-                    <Link
-                      to="/category/all"
-                      className="text-sm font-medium hover:text-primary transition-colors"
-                    >
-                      All Products
-                    </Link>
-                    <a
-                      href="offers"
-                      className="text-sm font-medium hover:text-primary transition-colors"
-                    >
-                      Special Offers
-                    </a>
-                    <a
-                      href="contact"
-                      className="text-sm font-medium hover:text-primary transition-colors"
-                    >
-                      Contact Us
-                    </a>
-                  </nav>
-                </div>
-
-                <div className="space-y-4">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-secondary/40">
-                    Account
-                  </p>
-                  <nav className="flex flex-col gap-4 pl-3">
-                    {isAuthenticated ? (
-                      <>
-                        <Link
-                          to="/profile"
-                          className="text-sm font-medium hover:text-primary transition-colors"
-                        >
-                          My Profile
-                        </Link>
-                        <Link
-                          to="/orders"
-                          className="text-sm font-medium hover:text-primary transition-colors"
-                        >
-                          My Orders
-                        </Link>
-                        {user?.role === "admin" && (
-                          <Link
-                            to="/admin"
-                            className="text-sm font-medium hover:text-primary transition-colors"
-                          >
-                            Admin Panel
-                          </Link>
-                        )}
-                        <button
-                          onClick={() => {
-                            logout();
-                            setIsMenuOpen(false);
-                          }}
-                          className="text-left text-sm font-medium hover:text-red-600 transition-colors"
-                        >
-                          Logout
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <Link
-                          to="/login"
-                          className="text-sm font-medium hover:text-primary transition-colors"
-                        >
-                          Login
-                        </Link>
-                        <Link
-                          to="/register"
-                          className="text-sm font-medium hover:text-primary transition-colors"
-                        >
-                          Register
-                        </Link>
-                      </>
-                    )}
+                    <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">Home</Link>
+                    <Link to="/category/all" className="text-sm font-medium hover:text-primary transition-colors">All Products</Link>
+                    <a href="#offers" className="text-sm font-medium hover:text-primary transition-colors">Special Offers</a>
+                    <a href="#contact" className="text-sm font-medium hover:text-primary transition-colors">Contact Us</a>
                   </nav>
                 </div>
               </div>
-
+              
               <div className="p-6 border-t border-secondary/5 space-y-6">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center text-success">
@@ -416,12 +204,7 @@ export const Layout = ({ children }) => {
                   </div>
                   <div>
                     <p className="text-xs font-bold">Need Help?</p>
-                    <a
-                      href="https://wa.me/8801996570203"
-                      className="text-sm font-bold text-success hover:underline"
-                    >
-                      WhatsApp Us
-                    </a>
+                    <a href="https://wa.me/8801996570203" className="text-sm font-bold text-success hover:underline">WhatsApp Us</a>
                   </div>
                 </div>
               </div>
@@ -431,7 +214,9 @@ export const Layout = ({ children }) => {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="flex-grow">{children}</main>
+      <main className="flex-grow">
+        {children}
+      </main>
 
       {/* Footer */}
       <footer id="contact" className="bg-secondary text-white pt-20 pb-10">
@@ -444,72 +229,30 @@ export const Layout = ({ children }) => {
                   <span className="text-xl font-extrabold tracking-tight text-white leading-none">
                     <span className="text-primary">সমীকরণ</span> শপ
                   </span>
-                  <span className="text-[8px] tracking-[0.3em] text-white/60 font-bold uppercase">
-                    Somikoron Shop
-                  </span>
+                  <span className="text-[8px] tracking-[0.3em] text-white/60 font-bold uppercase">Somikoron Shop</span>
                 </div>
               </div>
               <p className="text-white/60 text-sm leading-relaxed">
-                বিশ্বস্ত ঠিকানায় আপনাকে স্বাগতম। "সমীকরণ শপ" এটি একটি অনলাইন
-                ব্যবসায়ী প্রতিষ্ঠান। আমাদের পন্য সমুহঃ ১. যে কোন কাস্টমাইজ
-                টি-শার্ট, ক্যাপ, মগ, প্লেট, কলম সহ যাবতীয় প্রিন্টের পন্য
-                সামগ্রী। ২. ক্রেষ্ট ৩. ট্রফি ৪. পতাকা ৫. হালখাতার কার্ড
+                বিশ্বস্ত ঠিকানায় আপনাকে স্বাগতম। "সমীকরণ শপ" এটি একটি অনলাইন ব্যবসায়ী প্রতিষ্ঠান। আমাদের পন্য সমুহঃ ১. যে কোন কাস্টমাইজ টি-শার্ট, ক্যাপ, মগ, প্লেট, কলম সহ যাবতীয় প্রিন্টের পন্য সামগ্রী। ২. ক্রেষ্ট ৩. ট্রফি ৪. পতাকা ৫. হালখাতার কার্ড
               </p>
-              <div className="flex gap-4">{/* Social icons */}</div>
+              <div className="flex gap-4">
+                {/* Social icons */}
+              </div>
             </div>
-
+            
             <div>
-              <h4 className="text-lg font-bold mb-8 relative pb-4 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-1 after:bg-primary">
-                Quick Links
-              </h4>
+              <h4 className="text-lg font-bold mb-8 relative pb-4 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-1 after:bg-primary">Quick Links</h4>
               <ul className="space-y-4 text-sm text-white/60">
-                <li>
-                  <Link
-                    to="/"
-                    className="hover:text-primary transition-colors flex items-center gap-2"
-                  >
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/category/all"
-                    className="hover:text-primary transition-colors flex items-center gap-2"
-                  >
-                    Products
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href="offers"
-                    className="hover:text-primary transition-colors flex items-center gap-2"
-                  >
-                    Special Offers
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#features"
-                    className="hover:text-primary transition-colors flex items-center gap-2"
-                  >
-                    Why Choose Us
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="contact"
-                    className="hover:text-primary transition-colors flex items-center gap-2"
-                  >
-                    Contact Us
-                  </a>
-                </li>
+                <li><Link to="/" className="hover:text-primary transition-colors flex items-center gap-2">Home</Link></li>
+                <li><Link to="/category/all" className="hover:text-primary transition-colors flex items-center gap-2">Products</Link></li>
+                <li><a href="#offers" className="hover:text-primary transition-colors flex items-center gap-2">Special Offers</a></li>
+                <li><a href="#features" className="hover:text-primary transition-colors flex items-center gap-2">Why Choose Us</a></li>
+                <li><a href="#contact" className="hover:text-primary transition-colors flex items-center gap-2">Contact Us</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-lg font-bold mb-8 relative pb-4 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-1 after:bg-primary">
-                Contact Info
-              </h4>
+              <h4 className="text-lg font-bold mb-8 relative pb-4 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-1 after:bg-primary">Contact Info</h4>
               <ul className="space-y-4 text-sm text-white/60">
                 <li className="flex items-start gap-3">
                   <Phone className="w-4 h-4 text-primary shrink-0 mt-1" />
@@ -521,38 +264,27 @@ export const Layout = ({ children }) => {
                 </li>
                 <li className="flex items-start gap-3">
                   <Menu className="w-4 h-4 text-primary shrink-0 mt-1" />
-                  <span>
-                    Islamic university, Bangladesh Main gate, Jhenaidah, kushtia
-                  </span>
+                  <span>Islamic university, Bangladesh Main gate, Jhenaidah, kushtia</span>
                 </li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-lg font-bold mb-8 relative pb-4 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-1 after:bg-primary">
-                Newsletter
-              </h4>
-              <p className="text-sm text-white/60 mb-6">
-                Subscribe to get updates on new arrivals and special offers.
-              </p>
+              <h4 className="text-lg font-bold mb-8 relative pb-4 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-12 after:h-1 after:bg-primary">Newsletter</h4>
+              <p className="text-sm text-white/60 mb-6">Subscribe to get updates on new arrivals and special offers.</p>
               <div className="space-y-3">
-                <input
-                  type="email"
-                  placeholder="Your email address"
+                <input 
+                  type="email" 
+                  placeholder="Your email address" 
                   className="w-full bg-white/10 border-none rounded-subtle px-4 py-3 text-sm focus:ring-2 focus:ring-primary outline-none"
                 />
-                <button className="w-full bg-primary hover:bg-primary-container text-white py-3 rounded-subtle text-sm font-bold transition-colors">
-                  Subscribe Now
-                </button>
+                <button className="w-full bg-primary hover:bg-primary-container text-white py-3 rounded-subtle text-sm font-bold transition-colors">Subscribe Now</button>
               </div>
             </div>
           </div>
-
+          
           <div className="mt-20 pt-8 border-t border-white/10 text-center text-xs text-white/40">
-            <p>
-              © 2026 Somikoron Shop. All rights reserved. | Designed with ❤️ for
-              Bangladesh
-            </p>
+            <p>© 2026 Somikoron Shop. All rights reserved. | Designed with ❤️ for Bangladesh</p>
           </div>
         </div>
       </footer>
