@@ -40,6 +40,7 @@ import { AdminOrderDetail } from "./screens/admin/AdminOrderDetail";
 import { AdminUsers } from "./screens/admin/AdminUsers";
 import { AdminSettings } from "./screens/admin/AdminSettings";
 import AdminOffers from "./screens/admin/AdminOffers";
+import AdminCarousel from "./screens/admin/AdminCarousel";
 
 import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
@@ -170,6 +171,14 @@ export default function App() {
             element={
               <ProtectedRoute adminOnly>
                 <AdminOffers />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/carousel"
+            element={
+              <ProtectedRoute adminOnly>
+                <AdminCarousel />
               </ProtectedRoute>
             }
           />

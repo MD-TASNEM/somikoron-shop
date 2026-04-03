@@ -190,6 +190,22 @@ export const Layout = ({ children }) => {
                                 <User className="w-4 h-4" />
                                 Admin Dashboard
                               </Link>
+                              <Link
+                                to="/admin/offers"
+                                onClick={() => setIsUserMenuOpen(false)}
+                                className="flex items-center gap-3 px-4 py-3 text-sm text-secondary hover:bg-secondary/5 transition-colors"
+                              >
+                                <ShoppingBag className="w-4 h-4" />
+                                Manage Offers
+                              </Link>
+                              <Link
+                                to="/admin/carousel"
+                                onClick={() => setIsUserMenuOpen(false)}
+                                className="flex items-center gap-3 px-4 py-3 text-sm text-secondary hover:bg-secondary/5 transition-colors"
+                              >
+                                <ShoppingBag className="w-4 h-4" />
+                                Manage Carousel
+                              </Link>
                             </>
                           )}
                           <hr className="my-2 border-secondary/10" />
@@ -411,16 +427,38 @@ export const Layout = ({ children }) => {
                           <span className="text-sm font-medium">Orders</span>
                         </Link>
                         {user?.role === "admin" && (
-                          <Link
-                            to="/admin"
-                            onClick={() => setIsMenuOpen(false)}
-                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-primary/5 transition-colors bg-primary/10 text-primary font-bold"
-                          >
-                            <User className="w-4 h-4" />
-                            <span className="text-sm font-medium">
-                              Admin Dashboard
-                            </span>
-                          </Link>
+                          <>
+                            <Link
+                              to="/admin"
+                              onClick={() => setIsMenuOpen(false)}
+                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-primary/5 transition-colors bg-primary/10 text-primary font-bold"
+                            >
+                              <User className="w-4 h-4" />
+                              <span className="text-sm font-medium">
+                                Admin Dashboard
+                              </span>
+                            </Link>
+                            <Link
+                              to="/admin/offers"
+                              onClick={() => setIsMenuOpen(false)}
+                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-primary/5 transition-colors"
+                            >
+                              <ShoppingBag className="w-4 h-4" />
+                              <span className="text-sm font-medium">
+                                Manage Offers
+                              </span>
+                            </Link>
+                            <Link
+                              to="/admin/carousel"
+                              onClick={() => setIsMenuOpen(false)}
+                              className="flex items-center gap-3 p-3 rounded-xl hover:bg-primary/5 transition-colors"
+                            >
+                              <ShoppingBag className="w-4 h-4" />
+                              <span className="text-sm font-medium">
+                                Manage Carousel
+                              </span>
+                            </Link>
+                          </>
                         )}
                         <button
                           onClick={() => {
