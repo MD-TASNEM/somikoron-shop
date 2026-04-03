@@ -27,7 +27,7 @@ const EMAIL_PASS = process.env.EMAIL_PASS || "your-app-password";
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@somikoron.com";
 
 // Email Transporter Setup
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
   host: EMAIL_HOST,
   port: EMAIL_PORT,
   secure: false,
