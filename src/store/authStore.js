@@ -1,8 +1,15 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import axios from 'axios';
-import { auth } from '../firebase';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { auth } from "../firebase";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  sendPasswordResetEmail,
+  signOut,
+  onAuthStateChanged,
+} from "firebase/auth";
 
 export const useAuthStore = create()(
   persist(
@@ -10,67 +17,155 @@ export const useAuthStore = create()(
       user: null,
       token: null,
       isAuthenticated: false,
-      
+
+      // Admin email list - in production, this should come from a database
+      adminEmails: [
+        "admin@somikoron.com",
+        "tasnem@example.com",
+        "test@admin.com",
+        "hujaifa@admin.com",
+        // Add other admin emails here
+      ],
+
       login: async (email, password) => {
-        const response = await axios.post('/api/auth/login', { email, password });
-        set({ 
-          user: response.data.user, 
-          token: response.data.token, 
-          isAuthenticated: true 
-        });
-        return response.data;
-      },
-      
-      register: async (name, email, password, photoURL) => {
-        const response = await axios.post('/api/auth/register', { name, email, password, photoURL });
-        set({ 
-          user: response.data.user, 
-          token: response.data.token, 
-          isAuthenticated: true 
-        });
-        return response.data;
-      },
-      
-      googleLogin: async () => {
-        const provider = new GoogleAuthProvider();
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        
-        // Send to backend to get JWT
-        const response = await axios.post('/api/auth/google', {
-          uid: user.uid,
-          email: user.email,
-          name: user.displayName,
-          photoURL: user.photoURL
-        });
-        
-        set({ 
-          user: response.data.user, 
-          token: response.data.token, 
-          isAuthenticated: true 
-        });
-        return response.data;
-      },
-      
-      logout: () => {
-        set({ user: null, token: null, isAuthenticated: false });
-      },
-      
-      checkAuth: async () => {
-        const token = get().token;
-        if (!token) return;
         try {
-          const response = await axios.get('/api/auth/me', {
-            headers: { Authorization: `Bearer ${token}` }
+          const userCredential = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password,
+          );
+          const user = userCredential.user;
+
+          // Check if user is admin
+          const isAdmin = get().adminEmails.includes(email);
+
+          set({
+            user: {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              emailVerified: user.emailVerified,
+              role: isAdmin ? "admin" : "user",
+            },
+            token: await user.getIdToken(),
+            isAuthenticated: true,
           });
-          set({ user: response.data.user, isAuthenticated: true });
+
+          return { user: userCredential.user };
         } catch (error) {
+          throw new Error(error.message);
+        }
+      },
+
+      register: async (name, email, password, photoURL) => {
+        try {
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password,
+          );
+          const user = userCredential.user;
+
+          // Check if user is admin
+          const isAdmin = get().adminEmails.includes(email);
+
+          set({
+            user: {
+              uid: user.uid,
+              email: user.email,
+              displayName: name,
+              photoURL: photoURL || user.photoURL,
+              emailVerified: user.emailVerified,
+              role: isAdmin ? "admin" : "user",
+            },
+            token: await user.getIdToken(),
+            isAuthenticated: true,
+          });
+
+          return { user: userCredential.user };
+        } catch (error) {
+          throw new Error(error.message);
+        }
+      },
+
+      googleLogin: async () => {
+        try {
+          const provider = new GoogleAuthProvider();
+          const result = await signInWithPopup(auth, provider);
+          const user = result.user;
+
+          // Check if user is admin
+          const isAdmin = get().adminEmails.includes(user.email);
+
+          set({
+            user: {
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL,
+              emailVerified: user.emailVerified,
+              role: isAdmin ? "admin" : "user",
+            },
+            token: await user.getIdToken(),
+            isAuthenticated: true,
+          });
+
+          return { user: result.user };
+        } catch (error) {
+          throw new Error(error.message);
+        }
+      },
+
+      logout: async () => {
+        try {
+          await signOut(auth);
+        } catch {
+          // Silently handle logout errors
+        } finally {
           set({ user: null, token: null, isAuthenticated: false });
         }
-      }
+      },
+
+      forgotPassword: async (email) => {
+        try {
+          await sendPasswordResetEmail(auth, email);
+        } catch (error) {
+          throw new Error(error.message);
+        }
+      },
+
+      checkAuth: () => {
+        return new Promise((resolve) => {
+          const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+              const token = await user.getIdToken();
+              // Check if user is admin
+              const isAdmin = get().adminEmails.includes(user.email);
+
+              set({
+                user: {
+                  uid: user.uid,
+                  email: user.email,
+                  displayName: user.displayName,
+                  photoURL: user.photoURL,
+                  emailVerified: user.emailVerified,
+                  role: isAdmin ? "admin" : "user",
+                },
+                token,
+                isAuthenticated: true,
+              });
+            } else {
+              set({ user: null, token: null, isAuthenticated: false });
+            }
+            unsubscribe();
+            resolve();
+          });
+        });
+      },
     }),
     {
-      name: 'somikoron-auth',
-    }
-  )
+      name: "somikoron-auth",
+    },
+  ),
 );

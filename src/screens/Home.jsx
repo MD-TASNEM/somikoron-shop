@@ -166,7 +166,7 @@ export const Home = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="relative z-10 max-w-3xl space-y-8"
           >
-            <h1 className="text-5xl md:text-7xl lg:text-6xl text-white font-bold tracking-tight">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl text-white font-bold tracking-tight">
               সমীকরণ&nbsp;&nbsp;শপে&nbsp;&nbsp;আপনাকে
               <br />
               স্বাগতম

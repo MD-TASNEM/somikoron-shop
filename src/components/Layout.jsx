@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   ShoppingBag,
   Search,
@@ -9,25 +9,45 @@ import {
   Phone,
   MessageCircle as WhatsAppIcon,
   ChevronRight,
+  LogOut,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { WhatsAppFloat } from "./WhatsAppFloat";
 import { CartSidebar } from "./CartSidebar";
 import { useCartStore } from "../store/cartStore";
+import { useAuthStore } from "../store/authStore";
 import { CATEGORIES } from "../types";
+import { toast } from "react-toastify";
 
 export const Layout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isCartOpen, setIsCartOpen] = React.useState(false);
   const [isSearchOpen, setIsSearchOpen] = React.useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const totalItems = useCartStore((state) => state.getTotalItems());
+  const { user, isAuthenticated, logout } = useAuthStore();
 
   React.useEffect(() => {
-    window.scrollTo(0, 0);
+    if (typeof window !== "undefined") {
+      window.scrollTo(0, 0);
+    }
     setIsMenuOpen(false);
     setIsSearchOpen(false);
+    setIsUserMenuOpen(false);
   }, [location]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success("Logged out successfully");
+      navigate("/");
+      setIsUserMenuOpen(false);
+    } catch {
+      toast.error("Failed to logout");
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
@@ -111,9 +131,113 @@ export const Layout = ({ children }) => {
               >
                 <Search className="w-5 h-5" />
               </button>
-              <button className="hidden sm:block p-2 text-secondary hover:text-primary transition-colors">
-                <User className="w-5 h-5" />
-              </button>
+
+              {/* User Authentication */}
+              <div className="relative">
+                {isAuthenticated ? (
+                  <div className="relative">
+                    <button
+                      onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                      className="hidden sm:flex items-center gap-2 p-2 text-secondary hover:text-primary transition-colors"
+                    >
+                      {user?.photoURL ? (
+                        <img
+                          src={user.photoURL}
+                          alt={user.displayName || "User"}
+                          className="w-8 h-8 rounded-full object-cover border-2 border-primary/20"
+                        />
+                      ) : (
+                        <User className="w-5 h-5" />
+                      )}
+                      <span className="text-sm font-medium hidden md:block">
+                        {user?.displayName || "User"}
+                      </span>
+                    </button>
+
+                    {/* User Dropdown */}
+                    <AnimatePresence>
+                      {isUserMenuOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-secondary/10 py-2 z-50"
+                        >
+                          <Link
+                            to="/profile"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-3 px-4 py-3 text-sm text-secondary hover:bg-secondary/5 transition-colors"
+                          >
+                            <User className="w-4 h-4" />
+                            Profile
+                          </Link>
+                          <Link
+                            to="/orders"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-3 px-4 py-3 text-sm text-secondary hover:bg-secondary/5 transition-colors"
+                          >
+                            <ShoppingBag className="w-4 h-4" />
+                            Orders
+                          </Link>
+                          {user?.role === "admin" && (
+                            <>
+                              <hr className="my-2 border-secondary/10" />
+                              <Link
+                                to="/admin"
+                                onClick={() => setIsUserMenuOpen(false)}
+                                className="flex items-center gap-3 px-4 py-3 text-sm text-secondary hover:bg-secondary/5 transition-colors"
+                              >
+                                <User className="w-4 h-4" />
+                                Admin Dashboard
+                              </Link>
+                            </>
+                          )}
+                          <hr className="my-2 border-secondary/10" />
+                          <button
+                            onClick={handleLogout}
+                            className="flex items-center gap-3 px-4 py-3 text-sm text-secondary hover:bg-secondary/5 transition-colors w-full text-left"
+                          >
+                            <LogOut className="w-4 h-4" />
+                            Logout
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ) : (
+                  <div className="hidden sm:flex items-center gap-2">
+                    <Link
+                      to="/login"
+                      className="px-4 py-2 text-sm font-bold text-primary hover:bg-primary/10 rounded-xl transition-colors"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/register"
+                      className="px-4 py-2 text-sm font-bold bg-primary text-white hover:bg-primary-dark rounded-xl transition-colors"
+                    >
+                      Register
+                    </Link>
+                  </div>
+                )}
+
+                {/* Mobile User Button */}
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="sm:hidden p-2 text-secondary hover:text-primary transition-colors"
+                >
+                  {isAuthenticated && user?.photoURL ? (
+                    <img
+                      src={user.photoURL}
+                      alt={user.displayName || "User"}
+                      className="w-8 h-8 rounded-full object-cover border-2 border-primary/20"
+                    />
+                  ) : (
+                    <User className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+
               <button
                 onClick={() => setIsCartOpen(true)}
                 className="p-2 text-secondary hover:text-primary transition-colors relative group"
@@ -244,6 +368,94 @@ export const Layout = ({ children }) => {
               </div>
 
               <div className="p-6 border-t border-secondary/5 space-y-6">
+                {/* Authentication Section */}
+                <div className="space-y-4">
+                  {isAuthenticated ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 p-3 bg-secondary/5 rounded-xl">
+                        {user?.photoURL ? (
+                          <img
+                            src={user.photoURL}
+                            alt={user.displayName || "User"}
+                            className="w-10 h-10 rounded-full object-cover border-2 border-primary/20"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                            <User className="w-5 h-5 text-primary" />
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <p className="text-sm font-bold text-secondary">
+                            {user?.displayName || "User"}
+                          </p>
+                          <p className="text-xs text-secondary/60">
+                            {user?.email}
+                          </p>
+                        </div>
+                      </div>
+                      <nav className="flex flex-col gap-2">
+                        <Link
+                          to="/profile"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex items-center gap-3 p-3 rounded-xl hover:bg-primary/5 transition-colors"
+                        >
+                          <User className="w-4 h-4" />
+                          <span className="text-sm font-medium">Profile</span>
+                        </Link>
+                        <Link
+                          to="/orders"
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex items-center gap-3 p-3 rounded-xl hover:bg-primary/5 transition-colors"
+                        >
+                          <ShoppingBag className="w-4 h-4" />
+                          <span className="text-sm font-medium">Orders</span>
+                        </Link>
+                        {user?.role === "admin" && (
+                          <Link
+                            to="/admin"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-primary/5 transition-colors bg-primary/10 text-primary font-bold"
+                          >
+                            <User className="w-4 h-4" />
+                            <span className="text-sm font-medium">
+                              Admin Dashboard
+                            </span>
+                          </Link>
+                        )}
+                        <button
+                          onClick={() => {
+                            handleLogout();
+                            setIsMenuOpen(false);
+                          }}
+                          className="flex items-center gap-3 p-3 rounded-xl hover:bg-red-50 hover:text-red-600 transition-colors text-left"
+                        >
+                          <LogOut className="w-4 h-4" />
+                          <span className="text-sm font-medium">Logout</span>
+                        </button>
+                      </nav>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <Link
+                        to="/login"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary/5 transition-colors"
+                      >
+                        <User className="w-4 h-4" />
+                        Login
+                      </Link>
+                      <Link
+                        to="/register"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary-dark transition-colors"
+                      >
+                        <User className="w-4 h-4" />
+                        Register
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center text-success">
                     <WhatsAppIcon className="w-5 h-5" />
