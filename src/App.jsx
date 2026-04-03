@@ -39,7 +39,7 @@ import { AdminOrders } from "./screens/admin/AdminOrders";
 import { AdminOrderDetail } from "./screens/admin/AdminOrderDetail";
 import { AdminUsers } from "./screens/admin/AdminUsers";
 import { AdminSettings } from "./screens/admin/AdminSettings";
-import { AdminOffers } from "./screens/admin/AdminOffers";
+import AdminOffers from "./screens/admin/AdminOffers";
 
 import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
