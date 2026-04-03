@@ -60,7 +60,7 @@ export const PaymentSuccess = () => {
 
         <div className="space-y-2">
           <h1 className="text-4xl font-extrabold text-secondary">
-            Payment Success!
+            Your Order Success!
           </h1>
           <p className="text-secondary/60">
             Your order has been placed successfully. Thank you for shopping with

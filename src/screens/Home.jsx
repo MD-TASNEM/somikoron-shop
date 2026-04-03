@@ -29,6 +29,7 @@ import "swiper/css/pagination";
 export const Home = () => {
   const [latestProducts, setLatestProducts] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
+  const [carouselSlides, setCarouselSlides] = React.useState([]);
 
   React.useEffect(() => {
     const fetchProducts = async () => {
@@ -51,38 +52,31 @@ export const Home = () => {
       }
     };
 
-    fetchProducts();
-  }, []);
+    const fetchCarouselSlides = async () => {
+      try {
+        const response = await axios.get("/api/carousel");
+        if (Array.isArray(response.data)) {
+          setCarouselSlides(
+            response.data
+              .filter((slide) => slide.isActive)
+              .sort((a, b) => a.order - b.order),
+          );
+        } else {
+          console.error(
+            "Expected array of carousel slides, got:",
+            response.data,
+          );
+          setCarouselSlides([]);
+        }
+      } catch (error) {
+        console.error("Error fetching carousel slides:", error);
+        setCarouselSlides([]);
+      }
+    };
 
-  const carouselSlides = [
-    {
-      id: 1,
-      title: "Customized Photo Frames",
-      description:
-        "Personalize your memories with our beautiful custom photo frames. Perfect for gifts and home decor.",
-      image:
-        "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-      link: "/category/photo-frames",
-    },
-    {
-      id: 2,
-      title: "Elegant Nikah Nama Covers",
-      description:
-        "Premium Nikah Nama covers for your special day. Handcrafted with love and tradition.",
-      image:
-        "https://images.unsplash.com/photo-1544716278-e513176f20b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-      link: "/category/nikah-nama",
-    },
-    {
-      id: 3,
-      title: "Personalized Coffee Mugs",
-      description:
-        "Start your morning with a custom mug. Great for personal use or corporate gifting.",
-      image:
-        "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80",
-      link: "/category/cups",
-    },
-  ];
+    fetchProducts();
+    fetchCarouselSlides();
+  }, []);
 
   const offers = [
     {
@@ -208,7 +202,7 @@ export const Home = () => {
             className="rounded-xl overflow-hidden shadow-2xl aspect-[16/9] sm:aspect-[21/9]"
           >
             {carouselSlides.map((slide) => (
-              <SwiperSlide key={slide.id}>
+              <SwiperSlide key={slide._id || slide.id}>
                 <div className="relative w-full h-full">
                   <img
                     src={slide.image}
