@@ -1,36 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { motion } from 'motion/react';
-import axios from 'axios';
-import { CATEGORIES } from '../types';
-import { ProductCard } from '../components/ProductCard';
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import { motion } from "motion/react";
+import axios from "axios";
+import { CATEGORIES } from "../types";
+import { ProductCard } from "../components/ProductCard";
 
 export const ProductList = () => {
   const { categoryId } = useParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  const category = CATEGORIES.find(c => c.id === categoryId) || 
-                   CATEGORIES.find(c => c.name.toLowerCase() === categoryId?.toLowerCase()) ||
-                   { id: 'all', name: 'All Collection', nameBn: 'সব কালেকশন' };
+
+  const category = CATEGORIES.find((c) => c.id === categoryId) ||
+    CATEGORIES.find(
+      (c) => c.name.toLowerCase() === categoryId?.toLowerCase(),
+    ) || { id: "all", name: "All Collection", nameBn: "সব কালেকশন" };
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const url = categoryId === 'all' || !categoryId 
-          ? '/api/products' 
-          : `/api/products?category=${categoryId}`;
+        const url =
+          categoryId === "all" || !categoryId
+            ? "/api/products"
+            : `/api/products?category=${categoryId}`;
         const response = await axios.get(url);
         if (Array.isArray(response.data)) {
           setProducts(response.data);
         } else {
-          console.error('Expected array of products, got:', response.data);
+          console.error("Expected array of products, got:", response.data);
           setProducts([]);
         }
       } catch (error) {
         if (!error.isWarmup) {
-          console.error('Error fetching products:', error);
+          console.error("Error fetching products:", error);
         }
         setProducts([]);
       } finally {
@@ -46,14 +48,14 @@ export const ProductList = () => {
       {/* Header */}
       <div className="bg-surface-container-low py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-xs font-bold text-primary uppercase tracking-[0.4em]"
           >
             Collection
           </motion.p>
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -61,7 +63,7 @@ export const ProductList = () => {
           >
             {category.name}
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -75,15 +77,16 @@ export const ProductList = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Filters Bar */}
         <div className="mb-12 pb-8 border-b border-secondary/5">
-          <div className="flex overflow-x-auto no-scrollbar gap-3 pb-2">
+          <div className="flex flex-wrap gap-3 justify-center">
             {CATEGORIES.map((cat) => (
-              <Link 
-                key={cat.id} 
+              <Link
+                key={cat.id}
                 to={`/category/${cat.id}`}
                 className={`px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all ${
-                  (categoryId === cat.id || (categoryId === 'all' && cat.id === 'all')) 
-                    ? 'bg-primary text-white shadow-md' 
-                    : 'bg-white text-secondary/60 hover:bg-secondary/5'
+                  categoryId === cat.id ||
+                  (categoryId === "all" && cat.id === "all")
+                    ? "bg-primary text-white shadow-md"
+                    : "bg-white text-secondary/60 hover:bg-secondary/5"
                 }`}
               >
                 {cat.name}
@@ -105,8 +108,12 @@ export const ProductList = () => {
           </div>
         ) : (
           <div className="text-center py-20 space-y-4">
-            <p className="text-xl text-secondary/40">No products found in this category.</p>
-            <Link to="/category/all" className="text-primary font-bold">View all products</Link>
+            <p className="text-xl text-secondary/40">
+              No products found in this category.
+            </p>
+            <Link to="/category/all" className="text-primary font-bold">
+              View all products
+            </Link>
           </div>
         )}
       </div>

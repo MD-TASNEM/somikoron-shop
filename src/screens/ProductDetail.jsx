@@ -20,12 +20,12 @@ export const ProductDetail = () => {
         setLoading(true);
         const response = await axios.get(`/api/products/${id}`);
         setProduct(response.data);
-        
+
         // Initialize selected variant if available
         if (response.data.variants && response.data.variants.length > 0) {
           setSelectedVariant(response.data.variants[0]);
         }
-        
+
         // Fetch related products
         const relatedResponse = await axios.get(`/api/products?category=${response.data.category}`);
         if (Array.isArray(relatedResponse.data)) {
@@ -79,15 +79,15 @@ export const ProductDetail = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
           {/* Image Gallery */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="space-y-4"
           >
             <div className="aspect-square rounded-premium overflow-hidden bg-surface-container-low group shadow-inner">
-              <img 
-                src={product.image} 
-                alt={product.name} 
+              <img
+                src={product.image}
+                alt={product.name}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 referrerPolicy="no-referrer"
               />
@@ -95,9 +95,9 @@ export const ProductDetail = () => {
             <div className="grid grid-cols-4 gap-4">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className={`aspect-square rounded-subtle overflow-hidden bg-surface-container-low cursor-pointer hover:opacity-80 transition-opacity ${i === 1 ? 'border-2 border-primary' : ''}`}>
-                  <img 
-                    src={product.image} 
-                    alt={`${product.name} ${i}`} 
+                  <img
+                    src={product.image}
+                    alt={`${product.name} ${i}`}
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                   />
@@ -107,7 +107,7 @@ export const ProductDetail = () => {
           </motion.div>
 
           {/* Product Info */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             className="flex flex-col"
@@ -132,7 +132,7 @@ export const ProductDetail = () => {
                     ৳{selectedVariant ? selectedVariant.price : product.price}
                   </span>
                   <p className="text-xs font-bold text-secondary/40 mt-1">
-                    {selectedVariant 
+                    {selectedVariant
                       ? (selectedVariant.stock > 0 ? `${selectedVariant.stock} in stock` : 'Out of stock')
                       : (product.stock > 0 ? `${product.stock} in stock` : 'Out of stock')
                     }
@@ -160,7 +160,7 @@ export const ProductDetail = () => {
                   <p className="text-sm font-bold uppercase tracking-widest text-secondary/40">Select Variant</p>
                   <div className="flex flex-wrap gap-3">
                     {product.variants.map((variant) => (
-                      <button 
+                      <button
                         key={variant.id}
                         onClick={() => setSelectedVariant(variant)}
                         className={`px-4 py-2 rounded-subtle border-2 flex items-center justify-center font-bold transition-all ${selectedVariant?.id === variant.id ? 'border-primary bg-primary/5 text-primary' : 'border-secondary/5 hover:border-primary hover:text-primary'}`}
@@ -177,7 +177,7 @@ export const ProductDetail = () => {
                   <p className="text-sm font-bold uppercase tracking-widest text-secondary/40">Select Size</p>
                   <div className="flex flex-wrap gap-3">
                     {['S', 'M', 'L', 'XL', 'XXL'].map((size) => (
-                      <button 
+                      <button
                         key={size}
                         className={`w-12 h-12 rounded-subtle border-2 flex items-center justify-center font-bold transition-all ${size === 'M' ? 'border-primary bg-primary/5 text-primary' : 'border-secondary/5 hover:border-primary hover:text-primary'}`}
                       >
@@ -189,7 +189,7 @@ export const ProductDetail = () => {
               )}
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <a 
+                <a
                   href={whatsappLink}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -198,13 +198,13 @@ export const ProductDetail = () => {
                   <MessageCircle className="w-6 h-6 fill-current" />
                   WhatsApp এ অর্ডার করুন
                 </a>
-                <button 
+                <button
                   onClick={() => product && addItem(product, selectedVariant)}
                   disabled={selectedVariant ? selectedVariant.stock <= 0 : product.stock <= 0}
                   className="bg-secondary text-white px-8 py-5 rounded-premium font-bold flex items-center justify-center gap-3 hover:bg-secondary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ShoppingBag className="w-6 h-6" />
-                  {selectedVariant 
+                  {selectedVariant
                     ? (selectedVariant.stock > 0 ? 'কার্টে যোগ করুন' : 'আউট অফ স্টক')
                     : (product.stock > 0 ? 'কার্টে যোগ করুন' : 'আউট অফ স্টক')
                   }
@@ -238,7 +238,7 @@ export const ProductDetail = () => {
                 </div>
                 <div>
                   <p className="text-sm font-bold">সহজ রিটার্ন</p>
-                  <p className="text-xs text-secondary/60">৭ দিনের মধ্যে</p>
+                  <p className="text-xs text-secondary/60">৪৮ ঘন্টার মধ্যে</p>
                 </div>
               </div>
             </div>

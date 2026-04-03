@@ -40,42 +40,8 @@ export const Offers = () => {
         <p className="text-lg text-secondary/60">Grab the best deals on your favorite products before they're gone!</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {offers.map((offer) => (
-          <div key={offer.id} className="bg-white rounded-premium shadow-xl overflow-hidden border border-secondary/5 group hover:shadow-2xl transition-all">
-            <div className="h-64 relative overflow-hidden">
-              <img src={offer.image} alt={offer.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-              <div className={`absolute top-4 right-4 ${offer.color} text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg`}>
-                {offer.discount}
-              </div>
-            </div>
-            <div className="p-8 space-y-6">
-              <div>
-                <h3 className="text-2xl font-bold text-secondary">{offer.title}</h3>
-                <p className="text-secondary/60 text-sm mt-2 leading-relaxed">{offer.description}</p>
-              </div>
-              
-              <div className="flex items-center justify-between p-4 bg-secondary/5 rounded-xl border border-dashed border-secondary/20">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-secondary/40">Promo Code</p>
-                  <p className="text-lg font-mono font-bold text-secondary">{offer.code}</p>
-                </div>
-                <button className="text-primary font-bold hover:underline text-sm">Copy</button>
-              </div>
 
-              <Link 
-                to="/products"
-                className="w-full bg-secondary text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-secondary/90 transition-all group"
-              >
-                Shop Now
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Flash Sale Section */}
+   {/* Flash Sale Section */}
       <section className="mt-32 bg-secondary rounded-premium p-12 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -99,7 +65,7 @@ export const Offers = () => {
                 <p className="text-xs font-bold uppercase tracking-widest text-white/40">Seconds</p>
               </div>
             </div>
-            <Link 
+            <Link
               to="/products"
               className="inline-flex items-center gap-3 bg-primary text-white px-10 py-5 rounded-xl font-bold hover:bg-primary-dark transition-all shadow-xl shadow-primary/20 group"
             >
@@ -115,6 +81,46 @@ export const Offers = () => {
           </div>
         </div>
       </section>
+
+      <br />
+      <br />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {offers.map((offer) => (
+          <div key={offer.id} className="bg-white rounded-premium shadow-xl overflow-hidden border border-secondary/5 group hover:shadow-2xl transition-all">
+            <div className="h-64 relative overflow-hidden">
+              <img src={offer.image} alt={offer.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              <div className={`absolute top-4 right-4 ${offer.color} text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg`}>
+                {offer.discount}
+              </div>
+            </div>
+            <div className="p-8 space-y-6">
+              <div>
+                <h3 className="text-2xl font-bold text-secondary">{offer.title}</h3>
+                <p className="text-secondary/60 text-sm mt-2 leading-relaxed">{offer.description}</p>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-secondary/5 rounded-xl border border-dashed border-secondary/20">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-secondary/40">Promo Code</p>
+                  <p className="text-lg font-mono font-bold text-secondary">{offer.code}</p>
+                </div>
+                <button className="text-primary font-bold hover:underline text-sm">Copy</button>
+              </div>
+
+              <Link
+                to="/products"
+                className="w-full bg-secondary text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-secondary/90 transition-all group"
+              >
+                Shop Now
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </div>
+        ))}
+      </div>
+
+
     </div>
   );
 };

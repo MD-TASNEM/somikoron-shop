@@ -1,11 +1,13 @@
 # 🚀 SEO Implementation Guide - Somikoron Shop
 
 ## 📋 Overview
+
 This document outlines the comprehensive SEO implementation for Somikoron Shop, a modern e-commerce platform for custom merchandise in Bangladesh.
 
 ## 🎯 SEO Features Implemented
 
 ### 1. **Technical SEO Foundation**
+
 - **Meta Tags**: Complete title, description, and keyword optimization
 - **Open Graph**: Facebook and social media sharing optimization
 - **Twitter Cards**: Twitter-specific meta tags
@@ -15,6 +17,7 @@ This document outlines the comprehensive SEO implementation for Somikoron Shop, 
 - **Sitemap.xml**: XML sitemap for search engines
 
 ### 2. **Performance Optimization**
+
 - **Preconnect**: External domain connection optimization
 - **DNS Prefetch**: Resource loading optimization
 - **Critical CSS**: Above-the-fold styling
@@ -22,6 +25,7 @@ This document outlines the comprehensive SEO implementation for Somikoron Shop, 
 - **Loading States**: User experience during page loads
 
 ### 3. **Local SEO**
+
 - **Geo Tags**: Bangladesh-specific location data
 - **Business Information**: Complete contact details
 - **Local Schema**: Structured data for local business
@@ -30,27 +34,50 @@ This document outlines the comprehensive SEO implementation for Somikoron Shop, 
 ## 🛠️ Implementation Details
 
 ### **HTML Meta Tags**
+
 ```html
 <!-- Primary Meta Tags -->
-<title>সমীকরণ শপ - Custom T-Shirts, Mugs & Merchandise | Islamic University Bangladesh</title>
-<meta name="description" content="Shop custom printed T-shirts, mugs, trophies, flags and more at সমীকরণ শপ. Quality merchandise with fast delivery across Bangladesh." />
-<meta name="keywords" content="custom t-shirt bangladesh, printed mugs, islamic university merchandise, somikoron shop, custom gifts, trophies, flags, dhaka, jhenaidah, kushtia, online shopping bd" />
+<title>
+  সমীকরণ শপ - Custom T-Shirts, Mugs & Merchandise | Islamic University
+  Bangladesh
+</title>
+<meta
+  name="description"
+  content="Shop custom printed T-shirts, mugs, trophies, flags and more at সমীকরণ শপ. Quality merchandise with fast delivery across Bangladesh."
+/>
+<meta
+  name="keywords"
+  content="custom t-shirt bangladesh, printed mugs, islamic university merchandise, somikoron shop, custom gifts, trophies, flags, Kushtia, jhenaidah, kushtia, online shopping bd"
+/>
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://somikoron-shop.com/" />
-<meta property="og:title" content="সমীকরণ শপ - Custom T-Shirts & Merchandise | Islamic University Bangladesh" />
-<meta property="og:description" content="Shop custom printed T-shirts, mugs, trophies and more. Quality merchandise with fast delivery across Bangladesh." />
+<meta
+  property="og:title"
+  content="সমীকরণ শপ - Custom T-Shirts & Merchandise | Islamic University Bangladesh"
+/>
+<meta
+  property="og:description"
+  content="Shop custom printed T-shirts, mugs, trophies and more. Quality merchandise with fast delivery across Bangladesh."
+/>
 <meta property="og:image" content="https://somikoron-shop.com/og-image.jpg" />
 
 <!-- Twitter Card -->
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content="https://somikoron-shop.com/" />
-<meta property="twitter:title" content="সমীকরণ শপ - Custom T-Shirts & Merchandise" />
-<meta property="twitter:description" content="Shop custom printed T-shirts, mugs, trophies and more. Fast delivery across Bangladesh." />
+<meta
+  property="twitter:title"
+  content="সমীকরণ শপ - Custom T-Shirts & Merchandise"
+/>
+<meta
+  property="twitter:description"
+  content="Shop custom printed T-shirts, mugs, trophies and more. Fast delivery across Bangladesh."
+/>
 ```
 
 ### **Structured Data (JSON-LD)**
+
 ```json
 {
   "@context": "https://schema.org",
@@ -89,21 +116,22 @@ This document outlines the comprehensive SEO implementation for Somikoron Shop, 
 ```
 
 ### **Dynamic SEO Component**
+
 ```javascript
 // SEO.jsx - Reusable SEO component
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from "react-helmet-async";
 
-const SEO = ({ 
-  title, 
-  description, 
-  image, 
-  url, 
-  type = 'website',
+const SEO = ({
+  title,
+  description,
+  image,
+  url,
+  type = "website",
   keywords,
   product,
   article,
   noindex = false,
-  structuredData
+  structuredData,
 }) => {
   return (
     <Helmet>
@@ -150,18 +178,21 @@ index.html               # Main HTML with meta tags
 ## 🎯 SEO Strategy
 
 ### **Keyword Targeting**
+
 - **Primary Keywords**: custom t-shirt bangladesh, printed mugs, islamic university merchandise
 - **Secondary Keywords**: somikoron shop, custom gifts, trophies, flags
-- **Local Keywords**: dhaka, jhenaidah, kushtia, online shopping bd
+- **Local Keywords**: Kushtia, jhenaidah, kushtia, online shopping bd
 - **Long-tail Keywords**: custom photo frames, nikah nama covers, hal khata cards
 
 ### **Content Optimization**
+
 - **Product Pages**: Detailed descriptions with keywords
 - **Category Pages**: Category-specific optimization
 - **Blog Content**: Educational content about custom printing
 - **Local Content**: Bangladesh-specific information
 
 ### **Technical Optimization**
+
 - **Page Speed**: Optimized images and lazy loading
 - **Mobile First**: Responsive design for all devices
 - **Core Web Vitals**: Performance metrics optimization
@@ -170,20 +201,23 @@ index.html               # Main HTML with meta tags
 ## 📊 Performance Metrics
 
 ### **SEO Scores Target**
+
 - **Google PageSpeed**: 90+ (Mobile & Desktop)
 - **GTmetrix**: A grade performance
 - **Core Web Vitals**: All green metrics
 - **Mobile Usability**: 100% mobile-friendly
 
 ### **Search Rankings Goals**
+
 - **Local Pack**: Top 3 for local searches
 - **Organic Rankings**: First page for target keywords
-- **Featured Snippets: Rich results for products
+- \*\*Featured Snippets: Rich results for products
 - **Image Search**: Optimized images for visual search
 
 ## 🔧 Implementation Checklist
 
 ### ✅ **Completed**
+
 - [x] HTML meta tags optimization
 - [x] Open Graph and Twitter Cards
 - [x] JSON-LD structured data
@@ -196,6 +230,7 @@ index.html               # Main HTML with meta tags
 - [x] Performance optimization
 
 ### 🔄 **In Progress**
+
 - [ ] Product page SEO implementation
 - [ ] Category page optimization
 - [ ] Blog content SEO
@@ -203,6 +238,7 @@ index.html               # Main HTML with meta tags
 - [ ] Internal linking strategy
 
 ### 📋 **Future Enhancements**
+
 - [ ] Advanced schema markup
 - [ ] Multilingual SEO (Bengali)
 - [ ] Voice search optimization
@@ -212,12 +248,14 @@ index.html               # Main HTML with meta tags
 ## 🌐 Live Deployment
 
 ### **Production URLs**
+
 - **Main Site**: https://somikoron-shop.com
 - **Sitemap**: https://somikoron-shop.com/sitemap.xml
 - **Robots**: https://somikoron-shop.com/robots.txt
 - **Manifest**: https://somikoron-shop.com/manifest.json
 
 ### **Analytics Setup**
+
 - **Google Analytics**: GA4 implementation
 - **Google Search Console**: Webmaster tools
 - **Facebook Pixel**: Social media tracking
@@ -226,18 +264,21 @@ index.html               # Main HTML with meta tags
 ## 📈 Expected Results
 
 ### **Short-term (1-3 months)**
+
 - Improved organic visibility
 - Better social media sharing
 - Enhanced user experience
 - Mobile optimization benefits
 
 ### **Medium-term (3-6 months)**
+
 - Higher search rankings
 - Increased organic traffic
 - Better conversion rates
 - Local search dominance
 
 ### **Long-term (6+ months)**
+
 - Market leadership position
 - Brand authority establishment
 - Sustainable organic growth

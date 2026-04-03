@@ -445,8 +445,8 @@ async function startServer() {
           cus_name: formData.name,
           cus_email: req.user.email || "customer@example.com",
           cus_add1: formData.address,
-          cus_add2: formData.area === "dhaka" ? "Dhaka" : "Outside Dhaka",
-          cus_city: formData.area === "dhaka" ? "Dhaka" : "Other",
+          cus_add2: formData.area === "Kushtia" ? "Kushtia" : "Outside Kushtia",
+          cus_city: formData.area === "Kushtia" ? "Kushtia" : "Other",
           cus_state: "Bangladesh",
           cus_postcode: "1000",
           cus_country: "Bangladesh",
@@ -454,8 +454,9 @@ async function startServer() {
           cus_fax: "Not Applicable",
           ship_name: formData.name,
           ship_add1: formData.address,
-          ship_add2: formData.area === "dhaka" ? "Dhaka" : "Outside Dhaka",
-          ship_city: formData.area === "dhaka" ? "Dhaka" : "Other",
+          ship_add2:
+            formData.area === "Kushtia" ? "Kushtia" : "Outside Kushtia",
+          ship_city: formData.area === "Kushtia" ? "Kushtia" : "Other",
           ship_state: "Bangladesh",
           ship_postcode: "1000",
           ship_country: "Bangladesh",
@@ -1422,12 +1423,10 @@ async function startServer() {
       });
     } catch (error) {
       console.error("Error toggling memory archive:", error);
-      res
-        .status(500)
-        .json({
-          message: "Failed to toggle memory archive",
-          error: error.message,
-        });
+      res.status(500).json({
+        message: "Failed to toggle memory archive",
+        error: error.message,
+      });
     }
   });
 
@@ -1611,11 +1610,9 @@ async function startServer() {
 
         case "updateCategory":
           if (!data.category) {
-            return res
-              .status(400)
-              .json({
-                message: "Category is required for updateCategory action",
-              });
+            return res.status(400).json({
+              message: "Category is required for updateCategory action",
+            });
           }
           result = await db
             .collection("memories")
@@ -1635,12 +1632,10 @@ async function startServer() {
       });
     } catch (error) {
       console.error("Error performing bulk operation:", error);
-      res
-        .status(500)
-        .json({
-          message: "Failed to perform bulk operation",
-          error: error.message,
-        });
+      res.status(500).json({
+        message: "Failed to perform bulk operation",
+        error: error.message,
+      });
     }
   });
 

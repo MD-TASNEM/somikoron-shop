@@ -27,11 +27,11 @@ export const Checkout = () => {
     name: user?.name || "",
     phone: "",
     address: "",
-    area: "dhaka",
+    area: "Kushtia",
     paymentMethod: "cod",
   });
 
-  const shippingFee = formData.area === "dhaka" ? 70 : 130;
+  const shippingFee = formData.area === "Kushtia" ? 70 : 130;
   const totalPrice = getTotalPrice();
   const finalTotal = totalPrice + shippingFee;
 
@@ -238,7 +238,7 @@ export const Checkout = () => {
                   className={`w-full px-6 py-4 bg-secondary/5 border-none rounded-xl focus:ring-2 focus:ring-primary/20 outline-none transition-all h-24 ${
                     errors.address ? "ring-2 ring-red-500" : ""
                   }`}
-                  placeholder="House #12, Road #5, Sector #3, Uttara, Dhaka"
+                  placeholder="House #12, Road #5, Sector #3, Uttara, Kushtia"
                 />
                 {errors.address && (
                   <p className="text-xs text-red-500 font-medium flex items-center gap-1">
@@ -254,14 +254,14 @@ export const Checkout = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     type="button"
-                    onClick={() => handleInputChange("area", "dhaka")}
+                    onClick={() => handleInputChange("area", "Kushtia")}
                     className={`p-4 rounded-xl border-2 font-bold transition-all flex items-center justify-center gap-2 ${
-                      formData.area === "dhaka"
+                      formData.area === "Kushtia"
                         ? "border-primary bg-primary/5 text-primary"
                         : "border-secondary/5 hover:border-secondary/20"
                     }`}
                   >
-                    <Truck className="w-5 h-5" /> Inside Dhaka
+                    <Truck className="w-5 h-5" /> Inside Kushtia
                   </button>
                   <button
                     type="button"
@@ -272,7 +272,7 @@ export const Checkout = () => {
                         : "border-secondary/5 hover:border-secondary/20"
                     }`}
                   >
-                    <Truck className="w-5 h-5" /> Outside Dhaka
+                    <Truck className="w-5 h-5" /> Outside Kushtia
                   </button>
                 </div>
               </div>

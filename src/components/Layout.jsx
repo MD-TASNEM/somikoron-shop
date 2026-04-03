@@ -90,7 +90,6 @@ export const Layout = ({ children }) => {
                 { name: "Home", path: "/" },
                 { name: "Products", path: "/category/all" },
                 { name: "Offers", path: "/offers" },
-                { name: "Features", path: "/#features" },
                 { name: "Contact", path: "/contact" },
               ].map((item) => (
                 <Link
@@ -288,7 +287,7 @@ export const Layout = ({ children }) => {
                 বিশ্বস্ত ঠিকানায় আপনাকে স্বাগতম। "সমীকরণ শপ" এটি একটি অনলাইন
                 ব্যবসায়ী প্রতিষ্ঠান। আমাদের পন্য সমুহঃ ১. যে কোন কাস্টমাইজ
                 টি-শার্ট, ক্যাপ, মগ, প্লেট, কলম সহ যাবতীয় প্রিন্টের পন্য
-                সামগ্রী। ২. ক্রেষ্ট ৩. ট্রফি ৪. পতাকা ৫. হালখাতার কার্ড
+                সামগ্রী। ২. ক্রেষ্ট ৩. ট্রফি ৪. পতাকা ৫. হালখাতার কার্ড ইত্যাদি।
               </p>
               <div className="flex gap-4">{/* Social icons */}</div>
             </div>
@@ -355,10 +354,12 @@ export const Layout = ({ children }) => {
                   <span>+880 1996-570203</span>
                 </li>
                 <li className="flex items-start gap-3">
+                  <WhatsAppIcon className="w-4 h-4 text-primary shrink-0 mt-1" />
+                  <span>Facebook Page</span>
+                </li>
+                <li className="flex items-start gap-3">
                   <Menu className="w-4 h-4 text-primary shrink-0 mt-1" />
-                  <span>
-                    Islamic university, Bangladesh Main gate, Jhenaidah, kushtia
-                  </span>
+                  <span>Islamic university,Main gate, Jhenaidah, kushtia</span>
                 </li>
               </ul>
             </div>
@@ -385,8 +386,8 @@ export const Layout = ({ children }) => {
 
           <div className="mt-20 pt-8 border-t border-white/10 text-center text-xs text-white/40">
             <p>
-              © 2026 Somikoron Shop. All rights reserved. | Designed with ❤️ for
-              Bangladesh
+              © 2026 Somikoron Shop. All rights reserved. | Designed By
+              MD.TASNEM
             </p>
           </div>
         </div>

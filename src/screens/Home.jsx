@@ -8,6 +8,9 @@ import {
   Truck,
   RotateCcw,
   MessageCircle as WhatsAppIcon,
+  Gift,
+  Zap,
+  Clock,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -81,6 +84,44 @@ export const Home = () => {
     },
   ];
 
+  const offers = [
+    {
+      id: 1,
+      title: "Eid Special Collection",
+      discount: "Up to 30% OFF",
+      description:
+        "Exclusive Panjabi and Saree collection for the upcoming Eid festival.",
+      code: "EID2026",
+      image: "https://picsum.photos/seed/eid/800/600",
+      color: "bg-primary",
+    },
+    {
+      id: 2,
+      title: "New User Discount",
+      discount: "৳200 Flat OFF",
+      description: "Get flat ৳200 discount on your first order above ৳1000.",
+      code: "WELCOME200",
+      image: "https://picsum.photos/seed/welcome/800/600",
+      color: "bg-secondary",
+    },
+    {
+      id: 3,
+      title: "Free Shipping",
+      discount: "FREE DELIVERY",
+      description:
+        "Enjoy free delivery on all orders above ৳2000 across Bangladesh.",
+      code: "FREESHIP",
+      image: "https://picsum.photos/seed/shipping/800/600",
+      color: "bg-success",
+    },
+  ];
+
+  const handleCopyCode = (code) => {
+    navigator.clipboard.writeText(code);
+    // You can add a toast notification here
+    alert(`Promo code ${code} copied to clipboard!`);
+  };
+
   return (
     <>
       <SEO
@@ -95,7 +136,7 @@ export const Home = () => {
           "nikah nama covers",
           "hal khata cards",
           "custom gifts",
-          "dhaka",
+          "Kushtia",
           "jhenaidah",
           "kushtia",
           "online shopping bd",
@@ -116,7 +157,7 @@ export const Home = () => {
               className="w-full h-full object-cover opacity-30"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute inset-0 bg-linear-to-br from-primary/90 to-secondary/90 mix-blend-multiply" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/90 to-secondary/90 mix-blend-multiply" />
           </div>
 
           <motion.div
@@ -125,13 +166,14 @@ export const Home = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="relative z-10 max-w-3xl space-y-8"
           >
-            <h1 className="text-5xl md:text-7xl lg:text-8xl text-white font-bold tracking-tight">
-              সমীকরণ শপে স্বাগতম
+            <h1 className="text-5xl md:text-7xl lg:text-6xl text-white font-bold tracking-tight">
+              সমীকরণ&nbsp;&nbsp;শপে&nbsp;&nbsp;আপনাকে
+              <br />
+              স্বাগতম
             </h1>
 
             <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
-              আপনার সব ধরনের কাস্টমাইজড পণ্যের একমাত্র ঠিকানা। কাপ, প্লেট, ফটো
-              ফ্রেম, নিকah নামা, কলম, স্কেল এবং আরও অনেক কিছু!
+              আপনার সব ধরনের কাস্টমাইজড পণ্যের একমাত্র ঠিকানা।
             </p>
 
             <div className="flex flex-wrap gap-4 justify-center pt-4">
@@ -146,7 +188,7 @@ export const Home = () => {
                 href="https://wa.me/8801996570203"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-success hover:bg-[#128c7e] px-8 py-4 rounded-full text-white font-bold flex items-center gap-2 transition-all shadow-lg"
+                className="bg-green-600 hover:bg-green-700 px-8 py-4 rounded-full text-white font-bold flex items-center gap-2 transition-all shadow-lg"
               >
                 <WhatsAppIcon className="w-5 h-5" /> WhatsApp এ অর্ডার করুন
               </a>
@@ -163,7 +205,7 @@ export const Home = () => {
             autoplay={{ delay: 5000 }}
             navigation
             pagination={{ clickable: true }}
-            className="rounded-premium overflow-hidden shadow-2xl aspect-[16/9] sm:aspect-[21/9]"
+            className="rounded-xl overflow-hidden shadow-2xl aspect-[16/9] sm:aspect-[21/9]"
           >
             {carouselSlides.map((slide) => (
               <SwiperSlide key={slide.id}>
@@ -173,7 +215,7 @@ export const Home = () => {
                     alt={slide.title}
                     className="w-full h-full object-cover opacity-70 bg-secondary"
                   />
-                  <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-12 text-white">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
@@ -200,25 +242,68 @@ export const Home = () => {
           </Swiper>
         </section>
 
-        {/* Offer Zone with Countdown */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" id="offers">
-          <div className="bg-linear-to-br from-primary to-primary-dark rounded-premium p-10 sm:p-16 text-center text-white shadow-2xl space-y-8">
-            <div className="space-y-4">
-              <h2 className="text-4xl md:text-5xl font-bold">
-                Special Offer Zone
-              </h2>
-              <p className="text-xl text-white/80">
-                Get up to 50% off on selected items. Limited time offer!
-              </p>
-            </div>
-            <CountdownTimer />
-            <div className="pt-4">
-              <Link
-                to="/category/all"
-                className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 px-8 py-4 rounded-full font-bold transition-all border border-white/30 backdrop-blur-md"
-              >
-                View All Offers <ArrowRight className="w-5 h-5" />
-              </Link>
+        {/* Offer Zone - Flash Sale Section (Fixed) */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-gradient-to-r from-secondary to-secondary/95 rounded-2xl p-8 md:p-12 text-white relative overflow-hidden shadow-2xl">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-72 h-72 bg-primary/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl" />
+
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 rounded-full text-primary text-sm font-bold uppercase tracking-widest backdrop-blur-sm">
+                  <Zap className="w-4 h-4 fill-current" /> Flash Sale
+                </div>
+                <h2 className="text-4xl md:text-5xl font-extrabold leading-tight">
+                  Limited Time Midnight Madness!
+                </h2>
+                <p className="text-white/70 text-lg leading-relaxed">
+                  Get up to 50% off on selected items. Offer valid until
+                  midnight tonight.
+                </p>
+
+                {/* Countdown Timer */}
+                <div className="flex items-center gap-4 md:gap-8 pt-4">
+                  <div className="text-center">
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4">
+                      <p className="text-3xl md:text-4xl font-extrabold">08</p>
+                    </div>
+                    <p className="text-xs font-bold uppercase tracking-widest text-white/50 mt-2">
+                      Hours
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4">
+                      <p className="text-3xl md:text-4xl font-extrabold">45</p>
+                    </div>
+                    <p className="text-xs font-bold uppercase tracking-widest text-white/50 mt-2">
+                      Minutes
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4">
+                      <p className="text-3xl md:text-4xl font-extrabold">12</p>
+                    </div>
+                    <p className="text-xs font-bold uppercase tracking-widest text-white/50 mt-2">
+                      Seconds
+                    </p>
+                  </div>
+                </div>
+
+                <Link
+                  to="/offers"
+                  className="inline-flex items-center gap-3 bg-primary text-white px-8 md:px-10 py-4 md:py-5 rounded-xl font-bold hover:bg-primary-dark transition-all shadow-xl shadow-primary/20 group mt-6"
+                >
+                  <ShoppingBag className="w-5 h-5 md:w-6 md:h-6" />
+                  Shop the Sale
+                  <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
+
+              <div className="hidden lg:block relative">
+                <div className="w-full aspect-square bg-gradient-to-br from-white/5 to-white/10 rounded-full flex items-center justify-center border border-white/20 backdrop-blur-sm">
+                  <Gift className="w-40 h-40 md:w-48 md:h-48 text-primary/40 animate-bounce" />
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -229,17 +314,20 @@ export const Home = () => {
           id="products"
         >
           <div className="text-center space-y-4 mb-12">
-            <h2 className="text-4xl font-bold text-secondary">Our Products</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-secondary">
+              Our Products
+            </h2>
             <p className="text-secondary/60">
               High-quality customized products for all your needs
             </p>
           </div>
-          <div className="flex overflow-x-auto no-scrollbar gap-4 pb-4 justify-start sm:justify-center">
+          {/* Filters Bar */}
+          <div className="flex flex-wrap gap-3 justify-start sm:justify-center">
             {CATEGORIES.map((cat) => (
               <Link
                 key={cat.id}
                 to={`/category/${cat.id}`}
-                className="flex-shrink-0 px-6 py-3 bg-white rounded-full shadow-sm hover:shadow-md transition-all border border-secondary/5 hover:bg-primary hover:text-white group"
+                className="px-6 py-3 bg-white rounded-full shadow-sm hover:shadow-md transition-all border border-gray-100 hover:bg-primary hover:text-white group"
               >
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold">{cat.name}</span>
@@ -251,11 +339,30 @@ export const Home = () => {
 
         {/* Latest Arrivals Grid */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {latestProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-xl shadow-sm overflow-hidden animate-pulse"
+                >
+                  <div className="h-64 bg-gray-200"></div>
+                  <div className="p-6 space-y-4">
+                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                    <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-10 bg-gray-200 rounded"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {latestProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Trust Badges */}
@@ -263,17 +370,17 @@ export const Home = () => {
           className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20"
           id="features"
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="bg-white p-8 rounded-premium shadow-sm text-center space-y-4 hover:shadow-md transition-all group">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm text-center space-y-4 hover:shadow-md transition-all group">
               <div className="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center text-primary mx-auto group-hover:bg-primary group-hover:text-white transition-all duration-500">
                 <Truck className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-bold">Free Shipping</h3>
               <p className="text-sm text-secondary/60">
-                Free delivery on all orders over ৳500
+                Free delivery on all orders over ৳2000
               </p>
             </div>
-            <div className="bg-white p-8 rounded-premium shadow-sm text-center space-y-4 hover:shadow-md transition-all group">
+            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm text-center space-y-4 hover:shadow-md transition-all group">
               <div className="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center text-primary mx-auto group-hover:bg-primary group-hover:text-white transition-all duration-500">
                 <ShieldCheck className="w-8 h-8" />
               </div>
@@ -282,22 +389,22 @@ export const Home = () => {
                 100% secure payment processing
               </p>
             </div>
-            <div className="bg-white p-8 rounded-premium shadow-sm text-center space-y-4 hover:shadow-md transition-all group">
+            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm text-center space-y-4 hover:shadow-md transition-all group">
               <div className="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center text-primary mx-auto group-hover:bg-primary group-hover:text-white transition-all duration-500">
                 <RotateCcw className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-bold">Easy Returns</h3>
               <p className="text-sm text-secondary/60">
-                Easy returns within 7 days
+                Easy returns within 48 hours
               </p>
             </div>
-            <div className="bg-white p-8 rounded-premium shadow-sm text-center space-y-4 hover:shadow-md transition-all group">
+            <div className="bg-white p-6 md:p-8 rounded-2xl shadow-sm text-center space-y-4 hover:shadow-md transition-all group">
               <div className="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center text-primary mx-auto group-hover:bg-primary group-hover:text-white transition-all duration-500">
                 <WhatsAppIcon className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-bold">24/7 Support</h3>
+              <h3 className="text-xl font-bold">15/7 Support</h3>
               <p className="text-sm text-secondary/60">
-                Round-the-clock customer service
+                Customer service is available on WhatsApp from 8 AM to 11 PM
               </p>
             </div>
           </div>
