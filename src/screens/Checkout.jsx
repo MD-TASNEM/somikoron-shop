@@ -290,6 +290,100 @@ export const Checkout = () => {
               <CreditCard className="w-5 h-5 text-primary" /> Payment Method
             </h2>
             <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => handleInputChange("paymentMethod", "cod")}
+                  className={`p-6 rounded-xl border-2 font-bold transition-all flex items-center justify-center gap-3 ${
+                    formData.paymentMethod === "cod"
+                      ? "border-primary bg-primary/5 text-primary"
+                      : "border-secondary/5 hover:border-secondary/20"
+                  }`}
+                >
+                  <Wallet className="w-6 h-6" />
+                  <div className="text-left">
+                    <p className="font-bold">Cash on Delivery</p>
+                    <p className="text-xs text-secondary/60">
+                      Pay when you receive
+                    </p>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleInputChange("paymentMethod", "sslcommerz")
+                  }
+                  className={`p-6 rounded-xl border-2 font-bold transition-all flex items-center justify-center gap-3 ${
+                    formData.paymentMethod === "sslcommerz"
+                      ? "border-primary bg-primary/5 text-primary"
+                      : "border-secondary/5 hover:border-secondary/20"
+                  }`}
+                >
+                  <Smartphone className="w-6 h-6" />
+                  <div className="text-left">
+                    <p className="font-bold">Online Payment</p>
+                    <p className="text-xs text-secondary/60">
+                      bKash, Nagad, Rocket & Cards
+                    </p>
+                  </div>
+                </button>
+              </div>
+
+              {formData.paymentMethod === "sslcommerz" && (
+                <div className="p-4 bg-primary/5 rounded-xl border border-primary/20">
+                  <p className="text-sm font-bold text-primary mb-3">
+                    Choose Payment Gateway:
+                  </p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {[
+                      { id: "bkash", name: "bKash", icon: "📱" },
+                      { id: "nagad", name: "Nagad", icon: "💳" },
+                      { id: "rocket", name: "Rocket", icon: "🚀" },
+                      { id: "card", name: "Card", icon: "💳" },
+                    ].map((gateway) => (
+                      <button
+                        key={gateway.id}
+                        type="button"
+                        onClick={() =>
+                          handleInputChange("paymentGateway", gateway.id)
+                        }
+                        className={`p-3 rounded-lg border-2 font-bold transition-all flex flex-col items-center gap-2 ${
+                          formData.paymentGateway === gateway.id
+                            ? "border-primary bg-primary text-white"
+                            : "border-secondary/5 hover:border-secondary/20"
+                        }`}
+                      >
+                        <span className="text-2xl">{gateway.icon}</span>
+                        <span className="text-xs">{gateway.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {formData.paymentMethod === "cod" && (
+                <div className="p-4 bg-green-50 rounded-xl border border-green-200">
+                  <div className="flex items-center gap-2 text-green-700">
+                    <CheckCircle className="w-5 h-5" />
+                    <p className="text-sm font-bold">
+                      Cash on Delivery Selected
+                    </p>
+                  </div>
+                  <p className="text-xs text-green-600 mt-2">
+                    Pay the full amount when your order is delivered. No
+                    additional charges for COD orders.
+                  </p>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Order Summary */}
+          <section className="bg-white p-8 rounded-premium shadow-sm border border-secondary/5 space-y-6">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <ShoppingBag className="w-5 h-5 text-primary" /> Order Summary
+            </h2>
+            <div className="space-y-4">
               <div className="max-h-60 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
                 {items.map((item) => (
                   <div key={item.cartItemId} className="flex gap-4">
