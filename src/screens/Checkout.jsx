@@ -14,6 +14,9 @@ import {
   AlertCircle,
   CheckCircle,
   Loader2,
+  Smartphone,
+  Wallet,
+  Building2,
 } from "lucide-react";
 
 export const Checkout = () => {
@@ -28,7 +31,8 @@ export const Checkout = () => {
     phone: "",
     address: "",
     area: "Kushtia",
-    paymentMethod: "cod",
+    paymentMethod: "sslcommerz",
+    paymentGateway: "bkash",
   });
 
   const shippingFee = formData.area === "Kushtia" ? 70 : 130;
@@ -98,7 +102,7 @@ export const Checkout = () => {
       });
 
       if (response.data.success) {
-        if (formData.paymentMethod === "online") {
+        if (formData.paymentMethod === "sslcommerz") {
           // Redirect to SSLCommerz payment gateway
           if (response.data.paymentUrl) {
             toast.info("Redirecting to payment gateway...");
@@ -106,11 +110,13 @@ export const Checkout = () => {
           } else {
             toast.error("Payment gateway error. Please try again.");
           }
-        } else {
+        } else if (formData.paymentMethod === "cod") {
           // Cash on delivery - clear cart and redirect
           clearCart();
           toast.success("Order placed successfully!");
           navigate("/payment/success?order_id=" + response.data.orderId);
+        } else {
+          toast.error("Invalid payment method selected");
         }
       } else {
         toast.error(response.data.message || "Failed to place order");
@@ -283,69 +289,6 @@ export const Checkout = () => {
             <h2 className="text-xl font-bold flex items-center gap-2">
               <CreditCard className="w-5 h-5 text-primary" /> Payment Method
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <button
-                type="button"
-                onClick={() => handleInputChange("paymentMethod", "cod")}
-                className={`p-6 rounded-xl border-2 font-bold transition-all text-left flex items-start gap-4 ${
-                  formData.paymentMethod === "cod"
-                    ? "border-primary bg-primary/5 text-primary"
-                    : "border-secondary/5 hover:border-secondary/20"
-                }`}
-              >
-                <div
-                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                    formData.paymentMethod === "cod"
-                      ? "border-primary"
-                      : "border-secondary/20"
-                  }`}
-                >
-                  {formData.paymentMethod === "cod" && (
-                    <div className="w-3 h-3 bg-primary rounded-full" />
-                  )}
-                </div>
-                <div>
-                  <p className="text-lg">Cash on Delivery</p>
-                  <p className="text-xs font-normal opacity-60">
-                    Pay when you receive the product
-                  </p>
-                </div>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleInputChange("paymentMethod", "online")}
-                className={`p-6 rounded-xl border-2 font-bold transition-all text-left flex items-start gap-4 ${
-                  formData.paymentMethod === "online"
-                    ? "border-primary bg-primary/5 text-primary"
-                    : "border-secondary/5 hover:border-secondary/20"
-                }`}
-              >
-                <div
-                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                    formData.paymentMethod === "online"
-                      ? "border-primary"
-                      : "border-secondary/20"
-                  }`}
-                >
-                  {formData.paymentMethod === "online" && (
-                    <div className="w-3 h-3 bg-primary rounded-full" />
-                  )}
-                </div>
-                <div>
-                  <p className="text-lg">Online Payment</p>
-                  <p className="text-xs font-normal opacity-60">
-                    bKash, Nagad, Rocket or Card
-                  </p>
-                </div>
-              </button>
-            </div>
-          </section>
-        </div>
-
-        {/* Order Summary */}
-        <div className="space-y-8">
-          <section className="bg-white p-8 rounded-premium shadow-xl border border-secondary/5 space-y-6 sticky top-24">
-            <h2 className="text-xl font-bold">Order Summary</h2>
             <div className="space-y-4">
               <div className="max-h-60 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
                 {items.map((item) => (

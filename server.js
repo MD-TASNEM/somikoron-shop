@@ -8,6 +8,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import morgan from "morgan";
 import SslCommerzPayment from "sslcommerz-lts";
+import nodemailer from "nodemailer";
 
 dotenv.config();
 
@@ -17,6 +18,269 @@ const __dirname = path.dirname(__filename);
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const MONGODB_DB = process.env.MONGODB_DB || "somikoron_shop";
 const JWT_SECRET = process.env.JWT_SECRET || "somikoron_secret_key_123";
+
+// Email Configuration
+const EMAIL_HOST = process.env.EMAIL_HOST || "smtp.gmail.com";
+const EMAIL_PORT = process.env.EMAIL_PORT || 587;
+const EMAIL_USER = process.env.EMAIL_USER || "your-email@gmail.com";
+const EMAIL_PASS = process.env.EMAIL_PASS || "your-app-password";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@somikoron.com";
+
+// Email Transporter Setup
+const transporter = nodemailer.createTransporter({
+  host: EMAIL_HOST,
+  port: EMAIL_PORT,
+  secure: false,
+  auth: {
+    user: EMAIL_USER,
+    pass: EMAIL_PASS,
+  },
+});
+
+// Email Templates
+const generateBuyerInvoiceEmail = (order, user) => {
+  const items = order.items
+    .map(
+      (item) => `
+    <tr>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${item.name}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">৳${item.price}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">৳${(item.price * item.quantity).toFixed(2)}</td>
+    </tr>
+  `,
+    )
+    .join("");
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Order Confirmation - Somikoron Shop</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+        .order-info { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .table th { background: #f3f4f6; padding: 12px; text-align: left; border-bottom: 2px solid #e5e7eb; }
+        .total-row { font-weight: bold; background: #f9fafb; }
+        .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+        .btn { display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🎉 Order Confirmed!</h1>
+          <p>Thank you for your purchase from Somikoron Shop</p>
+        </div>
+
+        <div class="content">
+          <div class="order-info">
+            <h2>Order Details</h2>
+            <p><strong>Order ID:</strong> ${order._id}</p>
+            <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
+            <p><strong>Payment Status:</strong> <span style="color: #10b981; font-weight: bold;">${order.paymentStatus.toUpperCase()}</span></p>
+            <p><strong>Payment Method:</strong> ${order.paymentMethod === "sslcommerz" ? "Online Payment" : "Cash on Delivery"}</p>
+          </div>
+
+          <div class="order-info">
+            <h3>Shipping Information</h3>
+            <p><strong>Name:</strong> ${order.shippingInfo.name}</p>
+            <p><strong>Phone:</strong> ${order.shippingInfo.phone}</p>
+            <p><strong>Address:</strong> ${order.shippingInfo.address}</p>
+            <p><strong>Area:</strong> ${order.shippingInfo.area}</p>
+          </div>
+
+          <h3>Order Items</h3>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th style="text-align: center;">Quantity</th>
+                <th style="text-align: right;">Price</th>
+                <th style="text-align: right;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${items}
+              <tr>
+                <td colspan="3" style="padding: 12px; text-align: right;"><strong>Subtotal:</strong></td>
+                <td style="padding: 12px; text-align: right;">৳${order.totalPrice}</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="padding: 12px; text-align: right;"><strong>Shipping Fee:</strong></td>
+                <td style="padding: 12px; text-align: right;">৳${order.shippingFee}</td>
+              </tr>
+              <tr class="total-row">
+                <td colspan="3" style="padding: 12px; text-align: right;"><strong>Total Amount:</strong></td>
+                <td style="padding: 12px; text-align: right; color: #10b981; font-size: 18px;">৳${order.finalTotal}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="http://localhost:3000/my-orders" class="btn">View My Orders</a>
+          </div>
+
+          <div class="footer">
+            <p>This is an automated email. Please do not reply to this message.</p>
+            <p>© 2024 Somikoron Shop. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
+const generateAdminInvoiceEmail = (order, user) => {
+  const items = order.items
+    .map(
+      (item) => `
+    <tr>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${item.name}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">৳${item.price}</td>
+      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">৳${(item.price * item.quantity).toFixed(2)}</td>
+    </tr>
+  `,
+    )
+    .join("");
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>New Order Received - Somikoron Shop Admin</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+        .order-info { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .table th { background: #f3f4f6; padding: 12px; text-align: left; border-bottom: 2px solid #e5e7eb; }
+        .total-row { font-weight: bold; background: #f9fafb; }
+        .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+        .btn { display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px 0; }
+        .urgent { background: #fef2f2; border: 1px solid #fecaca; padding: 15px; border-radius: 6px; margin: 20px 0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🛍️ New Order Received!</h1>
+          <p>A customer has placed a new order on Somikoron Shop</p>
+        </div>
+
+        <div class="content">
+          <div class="urgent">
+            <strong>🚨 Action Required:</strong> Please review and process this order as soon as possible.
+          </div>
+
+          <div class="order-info">
+            <h2>Order Information</h2>
+            <p><strong>Order ID:</strong> ${order._id}</p>
+            <p><strong>Customer:</strong> ${user.name} (${user.email})</p>
+            <p><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
+            <p><strong>Payment Status:</strong> <span style="color: ${order.paymentStatus === "paid" ? "#10b981" : "#f59e0b"}; font-weight: bold;">${order.paymentStatus.toUpperCase()}</span></p>
+            <p><strong>Payment Method:</strong> ${order.paymentMethod === "sslcommerz" ? "Online Payment" : "Cash on Delivery"}</p>
+            ${order.transactionId ? `<p><strong>Transaction ID:</strong> ${order.transactionId}</p>` : ""}
+          </div>
+
+          <div class="order-info">
+            <h3>Customer Details</h3>
+            <p><strong>Name:</strong> ${order.shippingInfo.name}</p>
+            <p><strong>Phone:</strong> ${order.shippingInfo.phone}</p>
+            <p><strong>Address:</strong> ${order.shippingInfo.address}</p>
+            <p><strong>Area:</strong> ${order.shippingInfo.area}</p>
+          </div>
+
+          <h3>Order Summary</h3>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th style="text-align: center;">Quantity</th>
+                <th style="text-align: right;">Price</th>
+                <th style="text-align: right;">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${items}
+              <tr>
+                <td colspan="3" style="padding: 12px; text-align: right;"><strong>Subtotal:</strong></td>
+                <td style="padding: 12px; text-align: right;">৳${order.totalPrice}</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="padding: 12px; text-align: right;"><strong>Shipping Fee:</strong></td>
+                <td style="padding: 12px; text-align: right;">৳${order.shippingFee}</td>
+              </tr>
+              <tr class="total-row">
+                <td colspan="3" style="padding: 12px; text-align: right;"><strong>Total Amount:</strong></td>
+                <td style="padding: 12px; text-align: right; color: #10b981; font-size: 18px;">৳${order.finalTotal}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="http://localhost:3000/admin/orders" class="btn">Manage Order</a>
+          </div>
+
+          <div class="footer">
+            <p>This is an automated notification from Somikoron Shop Admin System.</p>
+            <p>© 2024 Somikoron Shop. All rights reserved.</p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
+// Email Service Functions
+const sendInvoiceEmails = async (order, user) => {
+  try {
+    // Send email to buyer
+    const buyerMailOptions = {
+      from: `"Somikoron Shop" <${EMAIL_USER}>`,
+      to: user.email,
+      subject: `Order Confirmation - Somikoron Shop (Order #${order._id})`,
+      html: generateBuyerInvoiceEmail(order, user),
+    };
+
+    // Send email to admin
+    const adminMailOptions = {
+      from: `"Somikoron Shop" <${EMAIL_USER}>`,
+      to: ADMIN_EMAIL,
+      subject: `New Order Received - Somikoron Shop (Order #${order._id})`,
+      html: generateAdminInvoiceEmail(order, user),
+    };
+
+    // Send both emails
+    const [buyerResult, adminResult] = await Promise.all([
+      transporter.sendMail(buyerMailOptions),
+      transporter.sendMail(adminMailOptions),
+    ]);
+
+    console.log(`Buyer email sent: ${buyerResult.messageId}`);
+    console.log(`Admin email sent: ${adminResult.messageId}`);
+
+    return {
+      success: true,
+      buyerEmailId: buyerResult.messageId,
+      adminEmailId: adminResult.messageId,
+    };
+  } catch (error) {
+    console.error("Error sending invoice emails:", error);
+    return { success: false, error: error.message };
+  }
+};
 
 // SSLCOMMERZ Configuration
 const SSLCOMMERZ_STORE_ID = process.env.SSLCOMMERZ_STORE_ID;
@@ -268,7 +532,56 @@ async function startServer() {
   // API Router
   const apiRouter = express.Router();
 
-  // Debug route (no DB check)
+  // --- Email Test Endpoint ---
+  apiRouter.get("/test-email", async (req, res) => {
+    try {
+      // Test email configuration
+      await transporter.verify();
+
+      // Create test order and user data
+      const testOrder = {
+        _id: "TEST-123",
+        items: [{ name: "Test Product", quantity: 2, price: 500 }],
+        totalPrice: 500,
+        shippingFee: 60,
+        finalTotal: 560,
+        shippingInfo: {
+          name: "Test Customer",
+          phone: "01234567890",
+          address: "123 Test Street",
+          area: "Test Area",
+        },
+        paymentMethod: "sslcommerz",
+        paymentStatus: "paid",
+        createdAt: new Date(),
+        transactionId: "TEST-TRANSACTION-123",
+      };
+
+      const testUser = {
+        name: "Test Customer",
+        email: EMAIL_USER, // Send test to the configured email
+      };
+
+      // Send test emails
+      const emailResult = await sendInvoiceEmails(testOrder, testUser);
+
+      res.json({
+        success: true,
+        message: "Test emails sent successfully",
+        emailResult,
+        testEmail: EMAIL_USER,
+      });
+    } catch (error) {
+      console.error("Email test error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Email test failed",
+        error: error.message,
+      });
+    }
+  });
+
+  // --- Debug route (no DB check) ---
   apiRouter.get("/debug", (req, res) => {
     res.json({ status: "ok", message: "API is working", dbConnected: !!db });
   });
@@ -415,11 +728,47 @@ async function startServer() {
   // --- SSLCOMMERZ Test Endpoint ---
   apiRouter.get("/payment/test", async (req, res) => {
     try {
+      // Check if SSLCOMMERZ is properly configured
+      const isConfigured = !!SSLCOMMERZ_STORE_ID && !!SSLCOMMERZ_STORE_PASSWORD;
+
+      if (!isConfigured) {
+        return res.status(500).json({
+          success: false,
+          message: "SSLCOMMERZ not configured",
+          config: {
+            storeId: !!SSLCOMMERZ_STORE_ID,
+            storePassword: !!SSLCOMMERZ_STORE_PASSWORD,
+            isLive: SSLCOMMERZ_IS_LIVE,
+          },
+        });
+      }
+
       const sslcz = new SslCommerzPayment(
         SSLCOMMERZ_STORE_ID,
         SSLCOMMERZ_STORE_PASSWORD,
         !SSLCOMMERZ_IS_LIVE,
       );
+
+      // Test basic connectivity
+      const testData = {
+        total_amount: 10,
+        currency: "BDT",
+        tran_id: `TEST-${Date.now()}`,
+        success_url: `${req.protocol}://${req.get("host")}/api/payment/test-success`,
+        fail_url: `${req.protocol}://${req.get("host")}/api/payment/test-fail`,
+        cancel_url: `${req.protocol}://${req.get("host")}/api/payment/test-cancel`,
+        product_name: "Test Product",
+        product_category: "test",
+        product_profile: "general",
+        cus_name: "Test Customer",
+        cus_email: "test@example.com",
+        cus_phone: "01234567890",
+        cus_add1: "Test Address",
+        cus_city: "Test City",
+        cus_country: "Bangladesh",
+      };
+
+      const testSession = await sslcz.initiateTransaction(testData);
 
       res.json({
         success: true,
@@ -431,14 +780,51 @@ async function startServer() {
           failUrl: SSLCOMMERZ_FAIL_URL,
           cancelUrl: SSLCOMMERZ_CANCEL_URL,
         },
+        testSession: {
+          hasGatewayUrl: !!(
+            testSession?.gatewayURL?.page || testSession?.GatewayPageURL
+          ),
+          hasTranId: !!(
+            testSession?.tran_id || testSession?.gatewayURL?.tran_id
+          ),
+        },
       });
     } catch (error) {
+      console.error("SSLCOMMERZ test error:", error);
       res.status(500).json({
         success: false,
-        message: "SSLCOMMERZ initialization failed",
+        message: "SSLCOMMERZ test failed",
         error: error.message,
+        config: {
+          storeId: !!SSLCOMMERZ_STORE_ID,
+          storePassword: !!SSLCOMMERZ_STORE_PASSWORD,
+          isLive: SSLCOMMERZ_IS_LIVE,
+        },
       });
     }
+  });
+
+  // --- Payment Configuration Checker ---
+  apiRouter.get("/payment/config", (req, res) => {
+    res.json({
+      sslcommerz: {
+        configured: !!(SSLCOMMERZ_STORE_ID && SSLCOMMERZ_STORE_PASSWORD),
+        storeId: SSLCOMMERZ_STORE_ID ? "CONFIGURED" : "NOT_SET",
+        storePassword: SSLCOMMERZ_STORE_PASSWORD ? "CONFIGURED" : "NOT_SET",
+        isLive: SSLCOMMERZ_IS_LIVE,
+        environment: SSLCOMMERZ_IS_LIVE ? "LIVE" : "SANDBOX",
+      },
+      urls: {
+        success: SSLCOMMERZ_SUCCESS_URL,
+        fail: SSLCOMMERZ_FAIL_URL,
+        cancel: SSLCOMMERZ_CANCEL_URL,
+      },
+      server: {
+        protocol: req.protocol,
+        host: req.get("host"),
+        baseUrl: `${req.protocol}://${req.get("host")}`,
+      },
+    });
   });
 
   // --- Orders API ---
@@ -482,31 +868,136 @@ async function startServer() {
       const result = await db.collection("orders").insertOne(orderData);
       const orderId = result.insertedId.toString();
 
-      if (formData.paymentMethod === "online") {
-        // Create a mock payment page with payment options
-        const mockPaymentUrl = `${req.protocol}://${req.get("host")}/payment/mock?order_id=${orderId}&amount=${finalTotal}`;
-
-        // Update order with transaction ID
-        await db.collection("orders").updateOne(
-          { _id: new ObjectId(orderId) },
-          {
-            $set: {
-              transactionId: `SOM-${orderId}-${Date.now()}`,
-              paymentGatewayUrl: mockPaymentUrl,
-              paymentStatus: "pending_payment",
-              status: "pending_payment",
-            },
-          },
+      if (formData.paymentMethod === "sslcommerz") {
+        // Create SSLCommerz payment session
+        const sslcz = new SslCommerzPayment(
+          SSLCOMMERZ_STORE_ID,
+          SSLCOMMERZ_STORE_PASSWORD,
+          !SSLCOMMERZ_IS_LIVE,
         );
 
-        return res.json({
-          success: true,
-          orderId,
-          paymentUrl: mockPaymentUrl,
-          transactionId: `SOM-${orderId}-${Date.now()}`,
-        });
-      } else {
+        // Prepare payment data for SSLCommerz
+        const transactionId = `SOM-${orderId}-${Date.now()}`;
+        const paymentData = {
+          total_amount: finalTotal,
+          currency: "BDT",
+          tran_id: transactionId,
+          success_url: `${req.protocol}://${req.get("host")}/api/payment/success?order_id=${orderId}`,
+          fail_url: `${req.protocol}://${req.get("host")}/api/payment/fail?order_id=${orderId}`,
+          cancel_url: `${req.protocol}://${req.get("host")}/api/payment/cancel?order_id=${orderId}`,
+          ipn_url: `${req.protocol}://${req.get("host")}/api/payment/ipn`,
+          multi_card_name: formData.paymentGateway || "bkash", // Selected gateway
+          product_name: "Somikoron Shop Order",
+          product_category: "ecommerce",
+          product_profile: "general",
+          cus_name: formData.name,
+          cus_email: req.user.email,
+          cus_phone: formData.phone,
+          cus_add1: formData.address,
+          cus_city: formData.area || "N/A",
+          cus_country: "Bangladesh",
+          shipping_method: "YES",
+          num_of_item: items.length,
+          product_names: items.map((item) => item.name).join(", "),
+          product_categories: items.map(() => "general").join(", "),
+          value_a: orderId,
+          value_b: req.user.email, // Store user email for backup
+          value_c: req.user.name, // Store user name for backup
+        };
+
+        try {
+          console.log("Creating SSLCommerz payment session...");
+          console.log("Payment data:", JSON.stringify(paymentData, null, 2));
+
+          const paymentSession = await sslcz.initiateTransaction(paymentData);
+          console.log(
+            "SSLCommerz response:",
+            JSON.stringify(paymentSession, null, 2),
+          );
+
+          // Check for different response formats
+          const gatewayUrl =
+            paymentSession?.gatewayURL?.page ||
+            paymentSession?.gatewayUrl?.page ||
+            paymentSession?.GatewayPageURL ||
+            paymentSession?.redirectGatewayURL;
+
+          const tranId =
+            paymentSession?.gatewayURL?.tran_id ||
+            paymentSession?.tran_id ||
+            transactionId;
+
+          if (gatewayUrl) {
+            // Update order with payment session info
+            await db.collection("orders").updateOne(
+              { _id: new ObjectId(orderId) },
+              {
+                $set: {
+                  transactionId: tranId,
+                  paymentGatewayUrl: gatewayUrl,
+                  paymentStatus: "pending_payment",
+                  status: "pending_payment",
+                  paymentDetails: {
+                    sessionKey: paymentSession.sessionkey,
+                    gatewayUrl: gatewayUrl,
+                    paymentMethod: formData.paymentGateway || "bkash",
+                    sslczResponse: paymentSession,
+                  },
+                  updatedAt: new Date(),
+                },
+              },
+            );
+
+            console.log(
+              `Payment session created successfully for order ${orderId}`,
+            );
+            return res.json({
+              success: true,
+              orderId,
+              paymentUrl: gatewayUrl,
+              transactionId: tranId,
+              message: "Payment session created successfully",
+            });
+          } else {
+            console.error(
+              "No gateway URL in SSLCommerz response:",
+              paymentSession,
+            );
+            throw new Error(
+              "Invalid payment gateway response - no redirect URL provided",
+            );
+          }
+        } catch (error) {
+          console.error("SSLCommerz payment error:", error);
+          console.error("Error details:", {
+            message: error.message,
+            stack: error.stack,
+            orderId,
+            storeId: SSLCOMMERZ_STORE_ID,
+            isLive: SSLCOMMERZ_IS_LIVE,
+          });
+          return res.status(500).json({
+            success: false,
+            message: "Payment gateway error. Please try again.",
+            error: error.message,
+            debug: {
+              orderId,
+              storeConfigured: !!SSLCOMMERZ_STORE_ID,
+              passwordConfigured: !!SSLCOMMERZ_STORE_PASSWORD,
+              isLive: SSLCOMMERZ_IS_LIVE,
+            },
+          });
+        }
+      } else if (formData.paymentMethod === "cod") {
         // Cash on delivery - order is placed successfully
+        // Send invoice emails for COD orders
+        const order = await db
+          .collection("orders")
+          .findOne({ _id: new ObjectId(orderId) });
+        if (order) {
+          await sendInvoiceEmails(order, req.user);
+        }
+
         return res.json({
           success: true,
           orderId,
@@ -582,6 +1073,8 @@ async function startServer() {
   // SSLCOMMERZ IPN (Instant Payment Notification) Handler
   apiRouter.post("/payment/ipn", async (req, res) => {
     try {
+      console.log("IPN received:", JSON.stringify(req.body, null, 2));
+
       const {
         tran_id,
         status,
@@ -591,17 +1084,38 @@ async function startServer() {
         card_type,
         store_amount,
         bank_tran_id,
+        error,
       } = req.body;
 
       if (!tran_id || !value_a) {
+        console.error("Invalid IPN data - missing tran_id or value_a");
         return res.status(400).json({ message: "Invalid IPN data" });
       }
 
       const orderId = value_a;
+      console.log(
+        `Processing IPN for order ${orderId}, transaction ${tran_id}, status ${status}`,
+      );
+
+      // First check if order exists
+      const order = await db
+        .collection("orders")
+        .findOne({ _id: new ObjectId(orderId) });
+      if (!order) {
+        console.error(`Order not found in IPN: ${orderId}`);
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Check if payment is already processed
+      if (order.paymentStatus === "paid" && status === "VALID") {
+        console.log(`Order ${orderId} already paid, IPN is duplicate`);
+        return res.status(200).send("IPN processed successfully (duplicate)");
+      }
 
       if (status === "VALID" || status === "VALIDATED") {
         // Payment successful
-        await db.collection("orders").updateOne(
+        console.log(`Payment successful for order ${orderId}, updating status`);
+        const updateResult = await db.collection("orders").updateOne(
           { _id: new ObjectId(orderId) },
           {
             $set: {
@@ -609,6 +1123,7 @@ async function startServer() {
               status: "pending",
               paymentDetails: {
                 tran_id,
+                status,
                 amount,
                 currency,
                 card_type,
@@ -616,16 +1131,45 @@ async function startServer() {
                 bank_tran_id,
                 ipn_received: true,
                 ipn_timestamp: new Date(),
+                ipn_status: status,
+                validation_method: "ipn",
               },
               updatedAt: new Date(),
             },
           },
         );
 
+        console.log(
+          `Order ${orderId} updated successfully, modified count: ${updateResult.modifiedCount}`,
+        );
+
+        if (updateResult.modifiedCount > 0) {
+          // Get user details for email
+          const user = await db
+            .collection("users")
+            .findOne({ _id: order.userId });
+
+          if (order && user) {
+            // Send invoice emails
+            try {
+              await sendInvoiceEmails(order, user);
+              console.log(`Invoice emails sent for order ${orderId} via IPN`);
+            } catch (emailError) {
+              console.error(
+                `Failed to send emails for order ${orderId} via IPN:`,
+                emailError,
+              );
+            }
+          }
+        }
+
         console.log(`Payment successful for order ${orderId}: ${tran_id}`);
       } else {
         // Payment failed
-        await db.collection("orders").updateOne(
+        console.log(
+          `Payment failed for order ${orderId}: ${tran_id} - ${status}`,
+        );
+        const updateResult = await db.collection("orders").updateOne(
           { _id: new ObjectId(orderId) },
           {
             $set: {
@@ -636,22 +1180,25 @@ async function startServer() {
                 status,
                 amount,
                 currency,
+                error,
                 ipn_received: true,
                 ipn_timestamp: new Date(),
+                ipn_status: status,
+                validation_method: "ipn",
               },
               updatedAt: new Date(),
             },
           },
         );
-
         console.log(
-          `Payment failed for order ${orderId}: ${tran_id} - ${status}`,
+          `Order ${orderId} marked as failed, modified count: ${updateResult.modifiedCount}`,
         );
       }
 
       res.status(200).send("IPN received successfully");
     } catch (error) {
       console.error("IPN handling error:", error);
+      console.error("IPN error stack:", error.stack);
       res.status(500).send("IPN processing failed");
     }
   });
@@ -727,70 +1274,158 @@ async function startServer() {
 
   // Payment success handler (for redirect after payment)
   apiRouter.get("/payment/success", async (req, res) => {
-    const { order_id, tran_id, amount } = req.query;
+    const { order_id, tran_id, amount, status } = req.query;
 
     try {
+      console.log(
+        `Payment success callback received: order_id=${order_id}, tran_id=${tran_id}, amount=${amount}, status=${status}`,
+      );
+
       if (!order_id || !tran_id) {
+        console.error("Missing payment information in success callback");
         return res.redirect(
           "/payment/fail?message=Missing payment information",
         );
       }
 
-      // Validate the payment
+      // First check if order exists
+      const order = await db
+        .collection("orders")
+        .findOne({ _id: new ObjectId(order_id) });
+      if (!order) {
+        console.error(`Order not found: ${order_id}`);
+        return res.redirect(
+          "/payment/fail?order_id=${order_id}&message=Order not found",
+        );
+      }
+
+      // Check if payment is already processed
+      if (order.paymentStatus === "paid") {
+        console.log(`Order ${order_id} already paid, redirecting to success`);
+        return res.redirect(
+          `/payment-success?order_id=${order_id}&tran_id=${tran_id}`,
+        );
+      }
+
+      // Validate payment with SSLCommerz
       const sslcz = new SslCommerzPayment(
         SSLCOMMERZ_STORE_ID,
         SSLCOMMERZ_STORE_PASSWORD,
         !SSLCOMMERZ_IS_LIVE,
       );
-      const validation = await sslcz.validate(tran_id, amount);
 
-      if (validation?.status === "VALIDATED") {
+      console.log(
+        `Validating payment: tran_id=${tran_id}, amount=${amount || order.finalTotal}`,
+      );
+      const validation = await sslcz.validate(
+        tran_id,
+        amount || order.finalTotal,
+      );
+      console.log(
+        "Payment validation result:",
+        JSON.stringify(validation, null, 2),
+      );
+
+      if (
+        validation?.status === "VALIDATED" ||
+        validation?.status === "VALID"
+      ) {
         // Update order status
-        await db.collection("orders").updateOne(
+        const updateResult = await db.collection("orders").updateOne(
           { _id: new ObjectId(order_id) },
           {
             $set: {
               paymentStatus: "paid",
               status: "pending",
-              paymentDetails: validation,
+              paymentDetails: {
+                ...validation,
+                validatedAt: new Date(),
+                callbackReceived: true,
+              },
               updatedAt: new Date(),
             },
           },
         );
+
+        console.log(
+          `Order ${order_id} payment validated, modified count: ${updateResult.modifiedCount}`,
+        );
+
+        if (updateResult.modifiedCount > 0) {
+          // Get user details for email
+          const user = await db
+            .collection("users")
+            .findOne({ _id: order.userId });
+
+          if (order && user) {
+            // Send invoice emails
+            try {
+              await sendInvoiceEmails(order, user);
+              console.log(`Invoice emails sent for order ${order_id}`);
+            } catch (emailError) {
+              console.error(
+                `Failed to send emails for order ${order_id}:`,
+                emailError,
+              );
+            }
+          }
+        }
 
         // Redirect to success page with order info
         return res.redirect(
           `/payment-success?order_id=${order_id}&tran_id=${tran_id}`,
         );
       } else {
+        console.error(
+          `Payment validation failed for order ${order_id}:`,
+          validation,
+        );
         return res.redirect(
           `/payment/fail?order_id=${order_id}&message=Payment validation failed`,
         );
       }
     } catch (error) {
       console.error("Payment success handling error:", error);
+      console.error("Error stack:", error.stack);
       return res.redirect(
-        `/payment/fail?order_id=${order_id}&message=Payment processing error`,
+        `/payment/fail?order_id=${order_id || "unknown"}&message=Payment processing error`,
       );
     }
   });
 
   // Payment fail handler (for redirect after failed payment)
   apiRouter.get("/payment/fail", async (req, res) => {
-    const { order_id, message } = req.query;
+    const { order_id, message, status } = req.query;
+
+    console.log(
+      `Payment fail callback received: order_id=${order_id}, message=${message}, status=${status}`,
+    );
 
     if (order_id) {
-      // Update order status to failed
-      await db.collection("orders").updateOne(
-        { _id: new ObjectId(order_id) },
-        {
-          $set: {
-            paymentStatus: "failed",
-            status: "payment_failed",
-            updatedAt: new Date(),
+      try {
+        // Update order status to failed
+        const updateResult = await db.collection("orders").updateOne(
+          { _id: new ObjectId(order_id) },
+          {
+            $set: {
+              paymentStatus: "failed",
+              status: "payment_failed",
+              paymentDetails: {
+                failureReason: message || "Payment failed",
+                failureStatus: status,
+                callbackReceived: true,
+                failedAt: new Date(),
+              },
+              updatedAt: new Date(),
+            },
           },
-        },
-      );
+        );
+        console.log(
+          `Order ${order_id} marked as failed, modified count: ${updateResult.modifiedCount}`,
+        );
+      } catch (error) {
+        console.error(`Error updating order ${order_id} as failed:`, error);
+      }
     }
 
     // Redirect to frontend fail page
@@ -804,18 +1439,31 @@ async function startServer() {
   apiRouter.get("/payment/cancel", async (req, res) => {
     const { order_id } = req.query;
 
+    console.log(`Payment cancel callback received: order_id=${order_id}`);
+
     if (order_id) {
-      // Update order status to cancelled
-      await db.collection("orders").updateOne(
-        { _id: new ObjectId(order_id) },
-        {
-          $set: {
-            paymentStatus: "cancelled",
-            status: "cancelled",
-            updatedAt: new Date(),
+      try {
+        // Update order status to cancelled
+        const updateResult = await db.collection("orders").updateOne(
+          { _id: new ObjectId(order_id) },
+          {
+            $set: {
+              paymentStatus: "cancelled",
+              status: "cancelled",
+              paymentDetails: {
+                cancelledAt: new Date(),
+                callbackReceived: true,
+              },
+              updatedAt: new Date(),
+            },
           },
-        },
-      );
+        );
+        console.log(
+          `Order ${order_id} marked as cancelled, modified count: ${updateResult.modifiedCount}`,
+        );
+      } catch (error) {
+        console.error(`Error updating order ${order_id} as cancelled:`, error);
+      }
     }
 
     // Redirect to frontend cancel page
