@@ -29,6 +29,7 @@ import {
 export const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const token = useAuthStore((state) => state.token);
 
   useEffect(() => {
@@ -40,6 +41,7 @@ export const AdminDashboard = () => {
         setStats(response.data);
       } catch (error) {
         console.error("Error fetching admin stats:", error);
+        setError(error.response?.data?.message || "Failed to load admin stats");
       } finally {
         setLoading(false);
       }
@@ -51,6 +53,40 @@ export const AdminDashboard = () => {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="w-16 h-16 text-error mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-secondary mb-2">
+            Admin Access Error
+          </h3>
+          <p className="text-secondary/60 mb-4">{error}</p>
+          <p className="text-sm text-secondary/40">
+            Please make sure you're logged in with an admin account and try
+            refreshing the page.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!stats) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="w-16 h-16 text-warning mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-secondary mb-2">
+            No Data Available
+          </h3>
+          <p className="text-secondary/60">
+            Admin statistics will appear here once data is available.
+          </p>
+        </div>
       </div>
     );
   }
