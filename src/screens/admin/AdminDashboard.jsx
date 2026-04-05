@@ -38,7 +38,7 @@ export const AdminDashboard = () => {
         const response = await axios.get("/api/admin/stats", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setStats(response.data);
+        setStats(response.data.stats);
       } catch (error) {
         console.error("Error fetching admin stats:", error);
         setError(error.response?.data?.message || "Failed to load admin stats");
@@ -94,31 +94,31 @@ export const AdminDashboard = () => {
   const kpis = [
     {
       label: "Total Revenue",
-      value: `৳${stats.totalRevenue.toLocaleString()}`,
+      value: `৳${(stats?.totalRevenue || 0).toLocaleString()}`,
       icon: DollarSign,
       color: "bg-success",
       trend: "+12.5%",
     },
     {
       label: "Total Orders",
-      value: stats.totalOrders,
+      value: stats?.totalOrders || 0,
       icon: ShoppingBag,
       color: "bg-primary",
       trend: "+8.2%",
     },
     {
       label: "Total Products",
-      value: stats.totalProducts,
+      value: stats?.totalProducts || 0,
       icon: Package,
       color: "bg-secondary",
       trend: "+3.1%",
     },
     {
       label: "Total Users",
-      value: stats.totalUsers,
+      value: stats?.totalUsers || 0,
       icon: Users,
       color: "bg-warning",
-      trend: "+15.4%",
+      trend: "+5.7%",
     },
   ];
 
@@ -244,7 +244,7 @@ export const AdminDashboard = () => {
             </Link>
           </div>
           <div className="space-y-6">
-            {stats.recentOrders.map((order) => (
+            {(stats?.recentOrders || []).map((order) => (
               <Link
                 key={order._id}
                 to={`/admin/orders/${order._id}`}

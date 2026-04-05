@@ -63,7 +63,7 @@ export const Checkout = () => {
     if (user && token) {
       // Verify token expiry (assuming token has exp field)
       try {
-        const tokenData = JSON.parse(atob(token.split('.')[1]));
+        const tokenData = JSON.parse(atob(token.split(".")[1]));
         if (tokenData.exp && tokenData.exp * 1000 < Date.now()) {
           toast.error("Session expired. Please login again.");
           logout();
@@ -139,14 +139,16 @@ export const Checkout = () => {
     } else {
       const cleanPhone = formData.phone.replace(/[\s-]/g, "");
       if (!/^(01[3-9]\d{8})$/.test(cleanPhone)) {
-        newErrors.phone = "Please enter a valid Bangladeshi phone number (01XXXXXXXXX)";
+        newErrors.phone =
+          "Please enter a valid Bangladeshi phone number (01XXXXXXXXX)";
       }
     }
 
     if (!formData.address.trim()) {
       newErrors.address = "Address is required";
     } else if (formData.address.trim().length < 10) {
-      newErrors.address = "Please enter a complete address (minimum 10 characters)";
+      newErrors.address =
+        "Please enter a complete address (minimum 10 characters)";
     }
 
     setErrors(newErrors);
@@ -196,7 +198,7 @@ export const Checkout = () => {
       const response = await api.post("/api/orders", orderData);
       console.log("Order response:", response.data);
 
-      if (response.data.success === true) {
+      if (response.data && response.data._id) {
         if (formData.paymentMethod === "sslcommerz") {
           // Redirect to SSLCommerz payment gateway
           if (response.data.paymentUrl) {
@@ -214,7 +216,7 @@ export const Checkout = () => {
             }, 10000);
 
             // Store order ID for reference
-            sessionStorage.setItem("pending_order_id", response.data.orderId);
+            sessionStorage.setItem("pending_order_id", response.data._id);
 
             window.location.href = response.data.paymentUrl;
             clearTimeout(redirectTimeout);
@@ -228,7 +230,7 @@ export const Checkout = () => {
           clearCart();
           localStorage.removeItem("checkout_form_data");
           toast.success("Order placed successfully!");
-          navigate(`/payment/success?order_id=${response.data.orderId}&method=cod`);
+          navigate(`/payment/success?order_id=${response.data._id}&method=cod`);
         } else {
           setSubmitError("Invalid payment method selected");
           toast.error("Invalid payment method selected");
@@ -255,7 +257,8 @@ export const Checkout = () => {
           navigate("/login");
           return;
         } else if (error.response.status === 429) {
-          errorMessage = "Too many attempts. Please wait a moment and try again.";
+          errorMessage =
+            "Too many attempts. Please wait a moment and try again.";
         }
 
         if (error.response.data?.error) {
@@ -263,7 +266,8 @@ export const Checkout = () => {
         }
       } else if (error.request) {
         // Network error
-        errorMessage = "Network error. Please check your connection and try again.";
+        errorMessage =
+          "Network error. Please check your connection and try again.";
       }
 
       setSubmitError(errorMessage);
@@ -274,11 +278,12 @@ export const Checkout = () => {
 
   const handleRetry = () => {
     if (retryCount < 3) {
-      setRetryCount(prev => prev + 1);
+      setRetryCount((prev) => prev + 1);
       setSubmitError("");
-      handleSubmit(new Event('submit'));
+      handleSubmit(new Event("submit"));
     } else {
-      const errorMsg = "Multiple failed attempts. Please refresh the page and try again.";
+      const errorMsg =
+        "Multiple failed attempts. Please refresh the page and try again.";
       setSubmitError(errorMsg);
       toast.error(errorMsg);
     }
@@ -308,12 +313,14 @@ export const Checkout = () => {
   const getEstimatedDelivery = () => {
     const today = new Date();
     const deliveryDate = new Date(today);
-    deliveryDate.setDate(today.getDate() + (formData.area === "Kushtia" ? 2 : 4));
-    return deliveryDate.toLocaleDateString('en-BD', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    deliveryDate.setDate(
+      today.getDate() + (formData.area === "Kushtia" ? 2 : 4),
+    );
+    return deliveryDate.toLocaleDateString("en-BD", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -322,7 +329,9 @@ export const Checkout = () => {
       <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4">
         <Loader2 className="w-16 h-16 text-primary animate-spin" />
         <h2 className="text-2xl font-bold">Redirecting to Payment Gateway</h2>
-        <p className="text-secondary/60">Please wait while we redirect you to complete your payment...</p>
+        <p className="text-secondary/60">
+          Please wait while we redirect you to complete your payment...
+        </p>
         <p className="text-sm text-secondary/40">Do not close this window</p>
       </div>
     );
@@ -556,7 +565,8 @@ export const Checkout = () => {
               Your order will be delivered on {getEstimatedDelivery()}
             </p>
             <p className="text-xs text-blue-600 mt-2">
-              *Delivery time may vary based on your location and product availability
+              *Delivery time may vary based on your location and product
+              availability
             </p>
           </section>
         </div>
@@ -570,7 +580,10 @@ export const Checkout = () => {
             <div className="space-y-4">
               <div className="max-h-60 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
                 {items.map((item, index) => (
-                  <div key={item.cartItemId || item.id || index} className="flex gap-4">
+                  <div
+                    key={item.cartItemId || item.id || index}
+                    className="flex gap-4"
+                  >
                     <div className="w-12 h-16 bg-secondary/5 rounded-lg overflow-hidden flex-shrink-0">
                       <img
                         src={item.image}

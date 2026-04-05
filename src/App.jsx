@@ -56,10 +56,17 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
 
 export default function App() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
+  const initializeAuth = useAuthStore((state) => state.initializeAuth);
 
   useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+    // First try to initialize from localStorage
+    const hasStoredAuth = initializeAuth();
+
+    // If no stored auth, check Firebase auth state
+    if (!hasStoredAuth) {
+      checkAuth();
+    }
+  }, [checkAuth, initializeAuth]);
 
   return (
     <Router>

@@ -113,8 +113,8 @@ export const AdminOrderDetail = () => {
               <ShoppingBag className="w-5 h-5 text-primary" /> Order Items
             </h2>
             <div className="space-y-6">
-              {order.items.map((item) => (
-                <div key={item.id} className="flex gap-6 group">
+              {order.items.map((item, index) => (
+                <div key={item.productId || index} className="flex gap-6 group">
                   <div className="w-20 h-24 bg-secondary/5 rounded-xl overflow-hidden flex-shrink-0">
                     <img
                       src={item.image}

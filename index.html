@@ -289,8 +289,12 @@
         "script",
         "https://connect.facebook.net/en_US/fbevents.js",
       );
-      fbq("init", "YOUR_PIXEL_ID");
-      fbq("track", "PageView");
+      // Initialize Facebook Pixel only if pixel ID is configured
+      const pixelId = "YOUR_PIXEL_ID";
+      if (pixelId && pixelId !== "YOUR_PIXEL_ID") {
+        fbq("init", pixelId);
+        fbq("track", "PageView");
+      }
     </script>
     <noscript
       ><img

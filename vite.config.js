@@ -20,9 +20,9 @@ export default defineConfig(({ mode }) => {
       port: 5173,
       proxy: {
         "/api": {
-          target: "https://somikoron-shop-server.vercel.app",
+          target: "http://localhost:4000",
           changeOrigin: true,
-          secure: true,
+          secure: false,
         },
       },
     },

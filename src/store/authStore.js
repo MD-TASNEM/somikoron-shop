@@ -1,17 +1,16 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { auth } from "../firebase";
+import api from "../lib/api";
 import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
   sendPasswordResetEmail,
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
+import { auth } from "../firebase";
 
-export const useAuthStore = create()(
+export const useAuthStore = create(
   persist(
     (set, get) => ({
       user: null,
@@ -27,65 +26,103 @@ export const useAuthStore = create()(
         // Add other admin emails here
       ],
 
+      // Initialize auth state from localStorage
+      initializeAuth: () => {
+        if (typeof window !== "undefined") {
+          const token = localStorage.getItem("token");
+          const userStr = localStorage.getItem("user");
+
+          if (token && userStr) {
+            try {
+              const user = JSON.parse(userStr);
+              set({
+                user,
+                token,
+                isAuthenticated: true,
+              });
+              return true;
+            } catch (error) {
+              console.error("Failed to parse stored user:", error);
+              // Clear invalid data
+              localStorage.removeItem("token");
+              localStorage.removeItem("user");
+            }
+          }
+        }
+        return false;
+      },
+
       login: async (email, password) => {
         try {
-          const userCredential = await signInWithEmailAndPassword(
-            auth,
+          const response = await api.post("/api/auth/login", {
             email,
             password,
-          );
-          const user = userCredential.user;
-
-          // Check if user is admin
-          const isAdmin = get().adminEmails.includes(email);
+          });
+          const { token, user } = response.data;
 
           set({
             user: {
-              uid: user.uid,
+              uid: user.id,
               email: user.email,
-              displayName: user.displayName,
+              displayName: user.name,
               photoURL: user.photoURL,
-              emailVerified: user.emailVerified,
-              role: isAdmin ? "admin" : "user",
+              emailVerified: true,
+              role: user.role,
             },
-            token: await user.getIdToken(),
+            token,
             isAuthenticated: true,
           });
 
-          return { user: userCredential.user };
+          // Store in localStorage (browser only)
+          if (typeof window !== "undefined") {
+            localStorage.setItem("token", token);
+            localStorage.setItem("user", JSON.stringify(user));
+          }
+
+          return { user: response.data.user };
         } catch (error) {
-          throw new Error(error.message);
+          throw new Error(
+            error.response?.data?.message || error.message || "Login failed",
+          );
         }
       },
 
       register: async (name, email, password, photoURL) => {
         try {
-          const userCredential = await createUserWithEmailAndPassword(
-            auth,
+          const response = await api.post("/api/auth/register", {
+            name,
             email,
             password,
-          );
-          const user = userCredential.user;
-
-          // Check if user is admin
-          const isAdmin = get().adminEmails.includes(email);
+            photoURL,
+          });
+          const { token, user } = response.data;
 
           set({
             user: {
-              uid: user.uid,
+              uid: user.id,
               email: user.email,
-              displayName: name,
-              photoURL: photoURL || user.photoURL,
-              emailVerified: user.emailVerified,
-              role: isAdmin ? "admin" : "user",
+              displayName: user.name,
+              photoURL: user.photoURL,
+              emailVerified: true,
+              role: user.role,
             },
-            token: await user.getIdToken(),
+            token,
             isAuthenticated: true,
           });
 
-          return { user: userCredential.user };
+          // Store in localStorage (browser only)
+          if (typeof window !== "undefined") {
+            localStorage.setItem("token", token);
+            localStorage.setItem("user", JSON.stringify(user));
+          }
+
+          return { user: response.data.user };
         } catch (error) {
-          throw new Error(error.message);
+          throw new Error(
+            error.response?.data?.message ||
+              error.message ||
+              "Registration failed",
+          );
         }
       },
 
@@ -95,25 +132,52 @@ export const useAuthStore = create()(
           const result = await signInWithPopup(auth, provider);
           const user = result.user;
 
-          // Check if user is admin
-          const isAdmin = get().adminEmails.includes(user.email);
+          // Call backend to sync/create user
+          const response = await api.post("/api/auth/google", {
+            uid: user.uid,
+            email: user.email,
+            name: user.displayName,
+            photoURL: user.photoURL,
+          });
+
+          const { token, user: backendUser } = response.data;
 
           set({
             user: {
-              uid: user.uid,
-              email: user.email,
-              displayName: user.displayName,
-              photoURL: user.photoURL,
+              uid: backendUser.id,
+              email: backendUser.email,
+              displayName: backendUser.name,
+              photoURL: backendUser.photoURL,
               emailVerified: user.emailVerified,
-              role: isAdmin ? "admin" : "user",
+              role: backendUser.role,
             },
-            token: await user.getIdToken(),
+            token,
             isAuthenticated: true,
           });
 
-          return { user: result.user };
+          // Store in localStorage (browser only)
+          if (typeof window !== "undefined") {
+            localStorage.setItem("token", token);
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                uid: backendUser.id,
+                email: backendUser.email,
+                displayName: backendUser.name,
+                photoURL: backendUser.photoURL,
+                emailVerified: user.emailVerified,
+                role: backendUser.role,
+              }),
+            );
+          }
+
+          return { user: backendUser };
         } catch (error) {
-          throw new Error(error.message);
+          throw new Error(
+            error.response?.data?.message ||
+              error.message ||
+              "Google login failed",
+          );
         }
       },
 
@@ -124,6 +188,11 @@ export const useAuthStore = create()(
           // Silently handle logout errors
         } finally {
           set({ user: null, token: null, isAuthenticated: false });
+          // Clear localStorage (browser only)
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+          }
         }
       },
 
@@ -137,26 +206,96 @@ export const useAuthStore = create()(
 
       checkAuth: () => {
         return new Promise((resolve) => {
-          const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            if (user) {
-              const token = await user.getIdToken();
-              // Check if user is admin
-              const isAdmin = get().adminEmails.includes(user.email);
+          // First check if we have a token in localStorage
+          const token =
+            typeof window !== "undefined"
+              ? localStorage.getItem("token")
+              : null;
+          const userStr =
+            typeof window !== "undefined" ? localStorage.getItem("user") : null;
 
+          if (token && userStr) {
+            try {
+              const user = JSON.parse(userStr);
               set({
-                user: {
-                  uid: user.uid,
-                  email: user.email,
-                  displayName: user.displayName,
-                  photoURL: user.photoURL,
-                  emailVerified: user.emailVerified,
-                  role: isAdmin ? "admin" : "user",
-                },
+                user,
                 token,
                 isAuthenticated: true,
               });
+              resolve();
+              return;
+            } catch (error) {
+              console.error("Failed to parse stored user:", error);
+            }
+          }
+
+          // If no stored data, check Firebase auth state
+          const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+              try {
+                // Try to sync with backend
+                const response = await api.post("/api/auth/google", {
+                  uid: user.uid,
+                  email: user.email,
+                  name: user.displayName,
+                  photoURL: user.photoURL,
+                });
+
+                const { token: backendToken, user: backendUser } =
+                  response.data;
+
+                set({
+                  user: {
+                    uid: backendUser.id,
+                    email: backendUser.email,
+                    displayName: backendUser.name,
+                    photoURL: backendUser.photoURL,
+                    emailVerified: user.emailVerified,
+                    role: backendUser.role,
+                  },
+                  token: backendToken,
+                  isAuthenticated: true,
+                });
+
+                // Store in localStorage (browser only)
+                if (typeof window !== "undefined") {
+                  localStorage.setItem("token", backendToken);
+                  localStorage.setItem(
+                    "user",
+                    JSON.stringify({
+                      uid: backendUser.id,
+                      email: backendUser.email,
+                      displayName: backendUser.name,
+                      photoURL: backendUser.photoURL,
+                      emailVerified: user.emailVerified,
+                      role: backendUser.role,
+                    }),
+                  );
+                }
+              } catch (error) {
+                console.error("Failed to sync with backend:", error);
+                // Set basic Firebase user info as fallback
+                const isAdmin = get().adminEmails.includes(user.email);
+                set({
+                  user: {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName,
+                    photoURL: user.photoURL,
+                    emailVerified: user.emailVerified,
+                    role: isAdmin ? "admin" : "user",
+                  },
+                  token: await user.getIdToken(),
+                  isAuthenticated: true,
+                });
+              }
             } else {
               set({ user: null, token: null, isAuthenticated: false });
+              // Clear localStorage (browser only)
+              if (typeof window !== "undefined") {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+              }
             }
             unsubscribe();
             resolve();
